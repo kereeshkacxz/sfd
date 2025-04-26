@@ -5,7 +5,7 @@ import block from 'bem-cn-lite';
 import {Button, Icon} from '@gravity-ui/uikit';
 import {Moon, Sun} from '@gravity-ui/icons';
 
-import './Wrapper.scss';
+import styles from './theme-wrapper.module.scss';
 
 const b = block('wrapper');
 
@@ -21,10 +21,10 @@ export type AppProps = {
     isDark: boolean;
 };
 
-export const Wrapper: React.FC<AppProps> = ({children, setTheme, isDark}) => {
+export const ThemeWrapper: React.FC<AppProps> = ({children, setTheme, isDark}) => {
     return (
-        <div className={b()}>
-            <div className={b('theme-button')}>
+        <div className={styles.root}>
+            <div className={styles.themeButton}>
                 <Button
                     size="l"
                     view="outlined"
@@ -35,14 +35,8 @@ export const Wrapper: React.FC<AppProps> = ({children, setTheme, isDark}) => {
                     <Icon data={isDark ? Sun : Moon} />
                 </Button>
             </div>
-            <div className={b('layout')}>
-                <div className={b('header')}>
-                    <div className={b('logo')}>
-                        <div className={b('gravity-logo', {dark: isDark})} />
-                        <div className={b('next-logo', {dark: isDark})} />
-                    </div>
-                </div>
-                <div className={b('content')}>{children}</div>
+            <div className={styles.layout}>
+                <div className={styles.content}>{children}</div>
             </div>
         </div>
     );
