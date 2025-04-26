@@ -1,24 +1,26 @@
-.root{
+.root {
     width: 100%;
     height: 100%;
     margin: 0;
+    display: flex;
+    flex-direction: column;
 }
 
-.themeButton{
+.themeButton {
     width: 100%;
     display: flex;
+    justify-content: flex-end;
     padding: 10px;
-    justify-content: end;
 }
 
-.layout{
-    height: 100%;
-    width: 100%;
+.layout {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
 }
 
-.content{
-    height: 100%;
-    width: 100%;
+.content {
+    flex: 1;
     display: flex;
     flex-direction: column;
     align-items: center;
