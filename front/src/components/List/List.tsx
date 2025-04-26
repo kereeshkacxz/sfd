@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Checkbox, Text, Button } from "@gravity-ui/uikit";
 import "./List.scss";
 
@@ -11,10 +11,10 @@ interface Item {
 
 interface ListProps {
   items: Item[];
+  actions: ReactNode;
 }
 
-export default function List({ items: initialItems }: ListProps) {
-  const [items, setItems] = useState<Item[]>(initialItems);
+export default function List({ items: items, actions:actions }: ListProps) {
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
 
   const toggleSelect = (id: number) => {
@@ -25,17 +25,7 @@ export default function List({ items: initialItems }: ListProps) {
 
   const isSelected = (id: number) => selectedItems.includes(id);
 
-  const handleCancel = () => {
-    setSelectedItems([]);
-  };
-
-  const handleCloseTasks = () => {
-    setItems((prev) => prev.filter((item) => !selectedItems.includes(item.id)));
-    setSelectedItems([]);
-  };
-
   const handleItemClick = (e: React.MouseEvent, id: number) => {
-    // Если клик был по чекбоксу или его label, не обрабатываем клик на элементе
     const target = e.target as HTMLElement;
     if (target.closest('.list-item__checkbox, .gravity-checkbox')) {
       return;
@@ -52,7 +42,7 @@ export default function List({ items: initialItems }: ListProps) {
               <div
                 key={item.id}
                 className={`list-item ${isSelected(item.id) ? "list-item--selected" : ""}`}
-                onClick={(e) => handleItemClick(e, item.id)} // Измененный обработчик
+                onClick={(e) => handleItemClick(e, item.id)} 
               >
                 <div className="list-item__content">
                   <Text variant="subheader-2" color="primary">
@@ -81,22 +71,7 @@ export default function List({ items: initialItems }: ListProps) {
       </div>
 
       <div className="list__buttons">
-        <Button
-          view="outlined"
-          size="l"
-          onClick={handleCancel}
-          className="list__button"
-        >
-          Отмена
-        </Button>
-        <Button
-          view="action"
-          size="l"
-          onClick={handleCloseTasks}
-          className="list__button"
-        >
-          Закрыть выбранные задачи
-        </Button>
+        {actions}
       </div>
     </div>
   );
