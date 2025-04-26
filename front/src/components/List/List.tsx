@@ -22,7 +22,6 @@ export default function List({
   selectedItems,
   onItemSelect
 }: ListProps) {
-
   const isSelected = (id: number) => selectedItems.includes(id);
 
   const handleItemClick = (e: React.MouseEvent, id: number) => {
@@ -34,9 +33,9 @@ export default function List({
   };
 
   return (
-    <div className="list-container">
-      <div className="list-items">
-        <div className="list-items__wrapper">
+    <div className="list">
+      <div className="list__container">
+        <div className="list__items">
           {items.length > 0 ? (
             items.map((item) => (
               <div 
@@ -61,7 +60,7 @@ export default function List({
               </div>
             ))
           ) : (
-            <div className="list-empty">
+            <div className="list__empty">
               <Text variant="body-2" color="secondary">
                 Нет активных задач
               </Text>
@@ -71,7 +70,7 @@ export default function List({
       </div>
 
       {selectedItems.length > 0 && (
-        <div className="list-actions">
+        <div className="list__actions">
           {actions}
         </div>
       )}
