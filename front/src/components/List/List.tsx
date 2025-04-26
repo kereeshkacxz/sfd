@@ -1,6 +1,6 @@
 "use client";
-import { ReactNode, useState } from "react";
-import { Checkbox, Text, Button } from "@gravity-ui/uikit";
+import { ReactNode } from "react";
+import { Checkbox, Text } from "@gravity-ui/uikit";
 import "./List.scss";
 
 interface Item {
@@ -12,16 +12,16 @@ interface Item {
 interface ListProps {
   items: Item[];
   actions: ReactNode;
+  selectedItems: number[];
+  onItemSelect: (id: number) => void;
 }
 
-export default function List({ items: items, actions:actions }: ListProps) {
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-
-  const toggleSelect = (id: number) => {
-    setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((itemId) => itemId !== id) : [...prev, id]
-    );
-  };
+export default function List({ 
+  items,
+  actions,
+  selectedItems,
+  onItemSelect
+}: ListProps) {
 
   const isSelected = (id: number) => selectedItems.includes(id);
 
@@ -30,19 +30,19 @@ export default function List({ items: items, actions:actions }: ListProps) {
     if (target.closest('.list-item__checkbox, .gravity-checkbox')) {
       return;
     }
-    toggleSelect(id);
+    onItemSelect(id);
   };
 
   return (
-    <div className="list">
-      <div className="list__container">
-        <div className="list__items">
+    <div className="list-container">
+      <div className="list-items">
+        <div className="list-items__wrapper">
           {items.length > 0 ? (
             items.map((item) => (
-              <div
+              <div 
                 key={item.id}
-                className={`list-item ${isSelected(item.id) ? "list-item--selected" : ""}`}
-                onClick={(e) => handleItemClick(e, item.id)} 
+                className={`list-item ${isSelected(item.id) ? 'list-item--selected' : ''}`}
+                onClick={(e) => handleItemClick(e, item.id)}
               >
                 <div className="list-item__content">
                   <Text variant="subheader-2" color="primary">
@@ -55,13 +55,13 @@ export default function List({ items: items, actions:actions }: ListProps) {
                 <div className="list-item__checkbox">
                   <Checkbox
                     checked={isSelected(item.id)}
-                    onChange={() => toggleSelect(item.id)}
+                    onChange={() => onItemSelect(item.id)}
                   />
                 </div>
               </div>
             ))
           ) : (
-            <div className="list__empty">
+            <div className="list-empty">
               <Text variant="body-2" color="secondary">
                 Нет активных задач
               </Text>
@@ -70,9 +70,11 @@ export default function List({ items: items, actions:actions }: ListProps) {
         </div>
       </div>
 
-      <div className="list__buttons">
-        {actions}
-      </div>
+      {selectedItems.length > 0 && (
+        <div className="list-actions">
+          {actions}
+        </div>
+      )}
     </div>
   );
 }
