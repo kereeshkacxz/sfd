@@ -1,13 +1,10 @@
 'use client';
 
 import React from 'react';
-import block from 'bem-cn-lite';
 import {Button, Icon} from '@gravity-ui/uikit';
 import {Moon, Sun} from '@gravity-ui/icons';
 
 import styles from './theme-wrapper.module.scss';
-
-const b = block('wrapper');
 
 export const DARK = 'dark';
 const LIGHT = 'light';

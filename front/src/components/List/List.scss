@@ -1,0 +1,85 @@
+.list {
+    width: 100%;
+    max-width: 500px; // меньше ширина списка
+    margin: 0 auto;
+    padding: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  
+    &__container {
+      flex: 1;
+      min-height: 400px; 
+      max-height: 600px;
+      overflow-y: auto;
+      padding-right: 8px;
+  
+      /* Скрываем скроллбар */
+      scrollbar-width: none; /* Firefox */
+      -ms-overflow-style: none;  /* IE и Edge */
+    }
+  
+    &__container::-webkit-scrollbar {
+      display: none; /* Chrome, Safari */
+    }
+  
+    &__items {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+  
+    &__buttons {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px; // Отступ между кнопками
+      width: 100%;
+    }
+  
+    &__button {
+      flex: 1 1 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px; // можно чуть скруглить кнопки, если хочешь
+      font-size: 16px;
+    }
+  
+    &__empty {
+      padding: 24px;
+      text-align: center;
+      color: var(--g-color-text-secondary);
+    }
+  }
+  
+  .list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-radius: 12px;
+    background-color: var(--g-color-base-background);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.2s, box-shadow 0.2s;
+    width: 100%; // элементы растягиваются по ширине контейнера
+  
+    &:hover {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+  
+    &--selected {
+      background-color: var(--g-color-base-warning-light);
+    }
+  
+    &__content {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+  
+    &__checkbox {
+      flex-shrink: 0;
+    }
+  }
+  
