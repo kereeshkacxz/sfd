@@ -25,9 +25,7 @@ export default function Home() {
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const [isAllSelected, setIsAllSelected] = useState(false);
 
-    // Обновляем статус "все выбраны" при изменении выбранных элементов
     useEffect(() => {
-        // Проверяем, все ли элементы выбраны
         if (items.length > 0 && selectedItems.length === items.length) {
             setIsAllSelected(true);
         } else {
@@ -37,16 +35,13 @@ export default function Home() {
 
     const toggleIsAllSelected = () => {
         if (isAllSelected) {
-            // Если все выбраны, снимаем выбор со всех
             setSelectedItems([]);
         } else {
-            // Если не все выбраны, выбираем все
             const allIds = items.map(item => item.id);
             setSelectedItems(allIds);
         }
     };
 
-    // Функция для обработки выбора элемента
     const handleItemSelect = (itemId: number) => {
         setSelectedItems(prev => 
             prev.includes(itemId) 
@@ -73,12 +68,7 @@ export default function Home() {
 
         return (
             <>
-                <Button
-                    view="outlined"
-                    size="l"
-                    onClick={handleCancel}
-                    className={styles.button}
-                >
+                <Button view="outlined" size="l" onClick={handleCancel} className={styles.button}>
                     Отмена
                 </Button>
                 <Button
@@ -108,6 +98,7 @@ export default function Home() {
                 selectedItems={selectedItems}
                 onItemSelect={handleItemSelect}
                 textIfNull={"Нет активных задач"}
+                withCheckbox={true}
             />
         </>
     );

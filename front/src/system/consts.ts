@@ -1,5 +1,5 @@
 import {
-    Star,
+    ListCheck,
     Bell,
     ChartPie,
     Binoculars,
@@ -11,7 +11,7 @@ import { MenuItemMainInfo } from './types';
 export const MenuItemsInfo: MenuItemMainInfo[] = [
     {
         id: 'tasks',
-        icon: Star,
+        icon: ListCheck,
         currentItemUrl: 'tasks',
         title: "Задачи"
     },
