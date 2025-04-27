@@ -1,6 +1,7 @@
 "use client";
 import { ReactNode } from "react";
-import { Checkbox, Text, Link } from "@gravity-ui/uikit";
+import { Checkbox, Text } from "@gravity-ui/uikit";
+import Link from "next/link";
 import styles from "./List.module.scss";
 
 interface Item {
@@ -70,9 +71,8 @@ export default function List({
               ) : (
                 <Link
                   key={item.id}
-                  view="primary"
                   href={`${baseHref}/${item.id}`} // Генерируем ссылку автоматически
-                  className={`${styles["list-item"]} ${styles["list-item--link"]}`}
+                  className={`${styles["list-item"]} ${styles["list-item__link"]}`}
                 >
                   <div className={styles["list-item__content"]}>
                     {item.title}

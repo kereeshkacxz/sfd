@@ -24,7 +24,7 @@ export const useMenuItems = (items: MenuItemMainInfo[], curPage: string, setCurP
                     return (
                         <Link
                             className={styles.linkWrapper}
-                            href={item.id} 
+                            href={`/${item.id}`} 
                             onClick={() => {setCurPage(item.id)}}
                         >
                             {component}
