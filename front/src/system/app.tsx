@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Theme, ThemeProvider, ToasterComponent, ToasterProvider } from '@gravity-ui/uikit';
 import { AsideHeader, LogoProps } from '@gravity-ui/navigation';
 import SFDImage from '../assets/icons/sfd.svg'; 
@@ -8,8 +8,9 @@ import { DARK, DEFAULT_THEME, ThemeWrapper } from './theme-wrapper';
 import styles from './app.module.scss';
 import { useMenuItems } from './hooks/use-menu-items';
 import { MenuItemsInfo } from './consts';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { toaster } from '@gravity-ui/uikit/toaster-singleton';
+import Authentication from '@/app/authentication/page';
 interface AppProps {
     children: React.ReactNode;
 }
@@ -26,6 +27,14 @@ export const App: React.FC<AppProps> = ({ children }) => {
         setIsCompact(!isCompact);
     };
     const items = useMenuItems(MenuItemsInfo, curPage, setCurPage);
+    const [isAuthorized, setIsAuthorized] = useState<boolean | null>(false);
+    const pathname = usePathname();
+
+    useEffect(() => {
+        setIsAuthorized(localStorage.getItem('token') !== null);
+    }, [pathname, router]);
+
+
 
     const asideHeaderContent: LogoProps = {
         icon: SFDImage,
@@ -42,6 +51,7 @@ export const App: React.FC<AppProps> = ({ children }) => {
     return (
         <ThemeProvider theme={theme} rootClassName={styles.root}>
             <ToasterProvider toaster={toaster}>
+                {isAuthorized ?
                 <AsideHeader
                     logo={asideHeaderContent}
                     compact={isCompact}
@@ -54,6 +64,11 @@ export const App: React.FC<AppProps> = ({ children }) => {
                     headerDecoration
                     menuItems={items}
                 />
+                : 
+                <ThemeWrapper setTheme={setTheme} isDark={isDark}>
+                <Authentication/>
+                </ThemeWrapper>
+                }
                 <ToasterComponent />
             </ToasterProvider>
         </ThemeProvider>

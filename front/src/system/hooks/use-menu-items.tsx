@@ -1,17 +1,18 @@
-import { Dispatch, SetStateAction, useMemo, useState } from 'react';
+import { Dispatch, SetStateAction, useMemo } from 'react';
 import { MenuItem } from '@gravity-ui/navigation';
 
 import styles from './use-menu-items.module.scss';
 import { MenuItemMainInfo } from '../types';
 import Link from 'next/link';
+import { isAdmin } from '@/components';
 
 export const useMenuItems = (items: MenuItemMainInfo[], curPage: string, setCurPage: Dispatch<SetStateAction<string>>): MenuItem[] => {
-
+    const isAdminValue = isAdmin();
     return useMemo((): MenuItem[] => {
         const menuItems: MenuItem[] = [];
         items.forEach((item) => {
             const isCurrent = item.currentItemUrl === curPage; 
-            console.log(curPage, item.currentItemUrl)
+            if(isAdminValue || item.admin === undefined)
             menuItems.push({
                 ...item,
                 title: item.title,
