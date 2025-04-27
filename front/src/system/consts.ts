@@ -1,8 +1,11 @@
 import {
     Star,
     Bell,
-    ChartPie
+    ChartPie,
+    Binoculars,
+    DatabasesFill
 } from '@gravity-ui/icons';
+import Avatar from '@/assets/icons/avatar.svg'
 import { MenuItemMainInfo } from './types';
 
 export const MenuItemsInfo: MenuItemMainInfo[] = [
@@ -23,5 +26,27 @@ export const MenuItemsInfo: MenuItemMainInfo[] = [
         icon: ChartPie,
         currentItemUrl: 'statistics',
         title: "Статистика"
+    },
+    {
+        id: 'accounts',
+        icon: Avatar,
+        currentItemUrl: 'accounts',
+        title: "Аккаунты",
+        admin: true
+    },
+    {
+        id: 'triggers',
+        icon: Binoculars,
+        currentItemUrl: 'triggers',
+        title: "Триггеры",
+        admin: true
+    },
+    {
+        id: 'data-source',
+        icon: DatabasesFill,
+        currentItemUrl: 'data-source',
+        title: "Источники данных",
+        admin: true
+
     },
 ]
