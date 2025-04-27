@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { Flex, Text, Link } from "@gravity-ui/uikit";
 import List from "@/components/List/List"; // твоя компонента
 import { isAdminWithRedirect } from "@/components";
@@ -9,7 +8,6 @@ import { isAdminWithRedirect } from "@/components";
 export default function DataSourcesPage() {
     isAdminWithRedirect();
     const [selectedDataSources, setSelectedDataSources] = useState<number[]>([]);
-    const router = useRouter();
 
     // Моковые данные источников данных
     const dataSources = [
