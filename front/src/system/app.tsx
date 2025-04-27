@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Theme, ThemeProvider } from '@gravity-ui/uikit';
+import { Theme, ThemeProvider, ToasterComponent, ToasterProvider } from '@gravity-ui/uikit';
 import { AsideHeader, LogoProps } from '@gravity-ui/navigation';
 import SFDImage from '../assets/icons/sfd.svg'; 
 import { DARK, DEFAULT_THEME, ThemeWrapper } from './theme-wrapper';
@@ -9,6 +9,7 @@ import styles from './app.module.scss';
 import { useMenuItems } from './hooks/use-menu-items';
 import { MenuItemsInfo } from './consts';
 import { useRouter } from 'next/navigation';
+import { toaster } from '@gravity-ui/uikit/toaster-singleton';
 interface AppProps {
     children: React.ReactNode;
 }
@@ -40,6 +41,7 @@ export const App: React.FC<AppProps> = ({ children }) => {
 
     return (
         <ThemeProvider theme={theme} rootClassName={styles.root}>
+            <ToasterProvider toaster={toaster}>
                 <AsideHeader
                     logo={asideHeaderContent}
                     compact={isCompact}
@@ -52,6 +54,8 @@ export const App: React.FC<AppProps> = ({ children }) => {
                     headerDecoration
                     menuItems={items}
                 />
+                <ToasterComponent />
+            </ToasterProvider>
         </ThemeProvider>
     );
 };

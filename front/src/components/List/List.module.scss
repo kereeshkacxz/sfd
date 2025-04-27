@@ -27,23 +27,18 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
+      padding: 10px;
+      width: 450px;
     }
   
-    &__buttons {
+    &__actions {
       display: flex;
       justify-content: space-between;
       gap: 8px; // Отступ между кнопками
       width: 100%;
+      height: 30px;
     }
-  
-    &__button {
-      flex: 1 1 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px; // можно чуть скруглить кнопки, если хочешь
-      font-size: 16px;
-    }
+
   
     &__empty {
       padding: 24px;
@@ -66,7 +61,7 @@
     width: 100%; // элементы растягиваются по ширине контейнера
   
     &:hover {
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      box-shadow: 0 4px 8px var(--g-color-text-hint);
     }
   
     &--selected {

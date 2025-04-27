@@ -1,9 +1,12 @@
 "use client";
 import List from "@/components/List/List";
-import { Text, Button } from "@gravity-ui/uikit";
-import { useState } from "react";
+import { Text, Button, useToaster, Flex, Checkbox } from "@gravity-ui/uikit";
+import { useEffect, useState } from "react";
+import styles from './tasks.module.scss'
 
 export default function Home() {
+    const {add} = useToaster();
+
     const [items, setItems] = useState([
         { id: 1, title: "One", subtitle: "First item in the list First item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the list" },
         { id: 2, title: "Two", subtitle: "Second item with description" },
@@ -20,6 +23,28 @@ export default function Home() {
         { id: 13, title: "Five", subtitle: "Middle of the list" },
     ]);
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
+    const [isAllSelected, setIsAllSelected] = useState(false);
+
+    // Обновляем статус "все выбраны" при изменении выбранных элементов
+    useEffect(() => {
+        // Проверяем, все ли элементы выбраны
+        if (items.length > 0 && selectedItems.length === items.length) {
+            setIsAllSelected(true);
+        } else {
+            setIsAllSelected(false);
+        }
+    }, [selectedItems, items]);
+
+    const toggleIsAllSelected = () => {
+        if (isAllSelected) {
+            // Если все выбраны, снимаем выбор со всех
+            setSelectedItems([]);
+        } else {
+            // Если не все выбраны, выбираем все
+            const allIds = items.map(item => item.id);
+            setSelectedItems(allIds);
+        }
+    };
 
     // Функция для обработки выбора элемента
     const handleItemSelect = (itemId: number) => {
@@ -37,6 +62,12 @@ export default function Home() {
         
         const handleCloseTasks = () => {
             setItems((prev) => prev.filter((item) => !selectedItems.includes(item.id)));
+            add({
+                title: `Задач${selectedItems.length < 2 ? 'a' : 'и'} успешно закрыт${selectedItems.length < 2 ? 'a' : 'ы'}!`,
+                name: "task_successful_ended",
+                theme: "success",
+                autoHiding: 2000
+            });
             setSelectedItems([]);
         };
 
@@ -46,7 +77,7 @@ export default function Home() {
                     view="outlined"
                     size="l"
                     onClick={handleCancel}
-                    className="list__button"
+                    className={styles.button}
                 >
                     Отмена
                 </Button>
@@ -54,7 +85,7 @@ export default function Home() {
                     view="action"
                     size="l"
                     onClick={handleCloseTasks}
-                    className="list__button"
+                    className={styles.button}
                     disabled={selectedItems.length === 0}
                 >
                     Закрыть выбранные задачи
@@ -64,16 +95,20 @@ export default function Home() {
     };
 
     return (
-        <div>
-            <Text variant="header-1" className="list-page__title">
-                Задачи работника
-            </Text>
+        <>
+            <Flex justifyContent={items.length > 0 ? "space-between": "center"} alignItems={'center'} width={'394px'}>
+                <Text variant="header-1">
+                    Задачи работника
+                </Text>
+                {items.length > 0 && <Checkbox checked={isAllSelected} onUpdate={toggleIsAllSelected}/>}
+            </Flex>
             <List 
                 actions={actions()} 
                 items={items} 
                 selectedItems={selectedItems}
                 onItemSelect={handleItemSelect}
+                textIfNull={"Нет активных задач"}
             />
-        </div>
+        </>
     );
 }

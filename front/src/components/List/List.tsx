@@ -1,57 +1,61 @@
 "use client";
 import { ReactNode } from "react";
 import { Checkbox, Text } from "@gravity-ui/uikit";
-import "./List.scss";
+import styles from "./List.module.scss";
 
 interface Item {
   id: number;
   title: string;
-  subtitle: string;
+  subtitle?: string;
 }
 
 interface ListProps {
   items: Item[];
-  actions: ReactNode;
+  actions?: ReactNode;
   selectedItems: number[];
   onItemSelect: (id: number) => void;
+  textIfNull?: string;
 }
 
 export default function List({ 
   items,
   actions,
   selectedItems,
-  onItemSelect
+  onItemSelect,
+  textIfNull = "Нет активных задач"
 }: ListProps) {
   const isSelected = (id: number) => selectedItems.includes(id);
 
   const handleItemClick = (e: React.MouseEvent, id: number) => {
     const target = e.target as HTMLElement;
-    if (target.closest('.list-item__checkbox, .gravity-checkbox')) {
+    if (target.closest(`.${styles["list-item__checkbox"]}, .gravity-checkbox`)) {
       return;
     }
     onItemSelect(id);
   };
 
   return (
-    <div className="list">
-      <div className="list__container">
-        <div className="list__items">
+    <div className={styles.list}>
+      <div className={styles["list__container"]}>
+        <div className={styles["list__items"]}>
           {items.length > 0 ? (
             items.map((item) => (
               <div 
                 key={item.id}
-                className={`list-item ${isSelected(item.id) ? 'list-item--selected' : ''}`}
+                className={`${styles["list-item"]} ${isSelected(item.id) ? styles["list-item--selected"] : ''}`}
                 onClick={(e) => handleItemClick(e, item.id)}
               >
-                <div className="list-item__content">
+                <div className={styles["list-item__content"]}>
                   <Text variant="subheader-2" color="primary">
                     {item.title}
                   </Text>
-                  <Text variant="body-2" color="secondary">
-                    {item.subtitle}
-                  </Text>
+                  {item.subtitle && (
+                    <Text variant="body-2" color="secondary">
+                      {item.subtitle}
+                    </Text>
+                  )}
                 </div>
-                <div className="list-item__checkbox">
+                <div className={styles["list-item__checkbox"]}>
                   <Checkbox
                     checked={isSelected(item.id)}
                     onChange={() => onItemSelect(item.id)}
@@ -60,20 +64,22 @@ export default function List({
               </div>
             ))
           ) : (
-            <div className="list__empty">
-              <Text variant="body-2" color="secondary">
-                Нет активных задач
-              </Text>
+            <div className={styles["list__empty"]}>
+              {textIfNull && (
+                <Text variant="body-2" color="secondary">
+                  {textIfNull}
+                </Text>
+              )}
             </div>
           )}
         </div>
       </div>
 
+        <div className={styles["list__actions"]}>
       {selectedItems.length > 0 && (
-        <div className="list__actions">
-          {actions}
+          actions
+        )}
         </div>
-      )}
     </div>
   );
 }
