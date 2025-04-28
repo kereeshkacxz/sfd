@@ -1,6 +1,11 @@
 # Используем образ с Node.js и Python
 FROM nikolaik/python-nodejs:python3.11-nodejs18
 
+sudo usermod -aG docker $USER
+
+# Применить изменения групп (без выхода из системы)
+newgrp docker
+
 WORKDIR /app
 
 # Установка git (для скрипта автообновления)
