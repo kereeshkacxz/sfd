@@ -1,0 +1,11 @@
+version: '3'
+
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"  # Порт для бэкенда
+      - "3000:3000"  # Порт для фронтенда
+    volumes:
+      - ./backend:/app/backend  # Для разработки: монтируем локальные директории
+      - ./frontend:/app/frontend

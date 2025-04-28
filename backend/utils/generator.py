@@ -7,7 +7,7 @@ from datetime import datetime
 scheduler = AsyncIOScheduler()
 
 
-def generate_data():
+async def generate_data():
     # Получаем настройки
     frequency = data_source_settings["frequency"]
     object_types = data_source_settings["object_types"]
@@ -73,8 +73,3 @@ def generate_data():
                         "user_id": 3  # worker1
                     }
                     notifications.append(new_notification)
-
-
-def start_generator():
-    scheduler.add_job(generate_data, "interval", seconds=data_source_settings["frequency"])
-    scheduler.start()
