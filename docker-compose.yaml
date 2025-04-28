@@ -5,8 +5,8 @@ services:
     build: .
     container_name: sfd_container
     ports:
-      - "8001:8000"  # Порт для бэкенда
-      - "3001:3000"  # Порт для фронтенда
+      - "8000:8000"  # Порт для бэкенда
+      - "3000:3000"  # Порт для фронтенда
     restart: unless-stopped
     volumes:
       - git-update-logs:/app/git-update.log
