@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Запускаем скрипт автообновления в фоне
+./update-and-restart.sh &
+
 # Запуск бэкенда в фоновом режиме
 cd /app/backend && python3 main.py &
 
