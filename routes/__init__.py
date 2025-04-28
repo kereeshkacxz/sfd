@@ -1,0 +1,9 @@
+from .auth import router as auth
+from .tasks import router as tasks
+from .notifications import router as notifications
+from .statistics import router as statistics
+from .machines import router as machines
+from .triggers import router as triggers
+from .data_source import router as data_source
+from .admins import router as admins
+from .workers import router as workers
