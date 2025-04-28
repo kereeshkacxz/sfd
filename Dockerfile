@@ -1,7 +1,6 @@
 # Используем образ с Node.js и Python
 FROM nikolaik/python-nodejs:python3.11-nodejs18
 
-
 WORKDIR /app
 
 # Установка git (для скрипта автообновления)
@@ -9,6 +8,11 @@ RUN apt-get update && apt-get install -y git && apt-get clean
 
 # Клонируем репозиторий
 RUN git clone https://github.com/kereeshkacxz/sfd.git /app
+
+# В секции обновления git репозитория:
+RUN git config --global pull.rebase false
+RUN git config --global pull.ff only
+    
 
 # Устанавливаем зависимости
 RUN pip install --no-cache-dir -r /app/backend/requirements.txt

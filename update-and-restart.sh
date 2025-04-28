@@ -1,5 +1,7 @@
 #!/bin/bash
 
+
+
 # Конфигурация
 REPO_PATH="/app"
 REPO_URL="https://github.com/kereeshkacxz/sfd.git"
@@ -68,8 +70,10 @@ while true; do
         
         # Применяем изменения
         log "Применение изменений..."
-        git pull origin "$BRANCH" --force || { log "Ошибка при выполнении git pull"; sleep "$CHECK_INTERVAL"; continue; }        
-        # Перезапускаем сервисы
+        # Добавьте строки в секцию обновления
+        git reset --hard HEAD
+        git clean -fd
+        git pull origin "$BRANCH" --force        # Перезапускаем сервисы
         restart_services
         
         # Обновляем текущий хэш
