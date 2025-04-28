@@ -68,8 +68,7 @@ while true; do
         
         # Применяем изменения
         log "Применение изменений..."
-        git pull origin "$BRANCH" || { log "Ошибка при выполнении git pull"; sleep "$CHECK_INTERVAL"; continue; }
-        
+        git pull origin "$BRANCH" --force || { log "Ошибка при выполнении git pull"; sleep "$CHECK_INTERVAL"; continue; }        
         # Перезапускаем сервисы
         restart_services
         
