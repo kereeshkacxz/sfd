@@ -15,7 +15,7 @@ RUN git config --global pull.ff only
     
 
 # Устанавливаем зависимости
-RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+# RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 RUN cd /app/frontend && npm install
 
 # Копируем скрипты запуска
