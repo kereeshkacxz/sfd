@@ -13,7 +13,6 @@ RUN git clone https://github.com/kereeshkacxz/sfd.git /app
 RUN git config --global pull.rebase false
 RUN git config --global pull.ff only
     
-
 # Устанавливаем зависимости
 # RUN pip install --no-cache-dir -r /app/backend/requirements.txt
 RUN cd /app/frontend && npm install
@@ -21,7 +20,9 @@ RUN cd /app/frontend && npm install
 # Копируем скрипты запуска
 COPY start.sh /app/
 COPY update-and-restart.sh /app/
-RUN chmod +x /app/start.sh /app/update-and-restart.sh
+COPY simple-start.sh /app/
+
+RUN chmod +x /app/start.sh /app/update-and-restart.sh /app/simple-start.sh
 
 # Экспонируем порты (8000 для бэкенда, 3000 для фронтенда)
 EXPOSE 8000 3000
