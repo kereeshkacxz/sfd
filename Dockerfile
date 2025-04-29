@@ -27,4 +27,4 @@ RUN chmod +x /app/start.sh /app/update-and-restart.sh
 EXPOSE 8000 3000
 
 # Запускаем оба приложения через скрипт
-CMD ["./start.sh"]
+CMD ["./simple-start.sh"]
