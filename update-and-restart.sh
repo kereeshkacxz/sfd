@@ -31,7 +31,7 @@ log "Текущий хэш коммита: $CURRENT_HASH"
 restart_services() {
     log "Установка зависимостей бэкенда..."
     pip install fastapi
-    pip install jwt
+    pip install PyJWT
     pip install dotenv
     pip install python-multipart
     pip install apscheduler
