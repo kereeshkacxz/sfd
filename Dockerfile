@@ -14,7 +14,12 @@ RUN git config --global pull.rebase false
 RUN git config --global pull.ff only
     
 # Устанавливаем зависимости
-# RUN pip install --no-cache-dir -r /app/backend/requirements.txt
+RUN pip install fastapi
+RUN pip install jwt
+RUN pip install dotenv
+RUN pip install python-multipart
+RUN pip install apscheduler
+RUN pip install uvicorn
 RUN cd /app/frontend && npm install
 
 # Копируем скрипты запуска
@@ -28,4 +33,4 @@ RUN chmod +x /app/start.sh /app/update-and-restart.sh /app/simple-start.sh
 EXPOSE 8000 3000
 
 # Запускаем оба приложения через скрипт
-CMD ["./simple-start.sh"]
+CMD ["./start.sh"]

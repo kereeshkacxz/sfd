@@ -30,7 +30,12 @@ log "Текущий хэш коммита: $CURRENT_HASH"
 # Функция для перезапуска сервисов
 restart_services() {
     log "Установка зависимостей бэкенда..."
-    pip install --no-cache-dir -r /app/backend/requirements.txt
+    pip install fastapi
+    pip install jwt
+    pip install dotenv
+    pip install python-multipart
+    pip install apscheduler
+    pip install uvicorn
     
     log "Установка зависимостей фронтенда..."
     cd /app/frontend && npm install
@@ -50,7 +55,7 @@ restart_services() {
     
     # Запускаем процессы заново
     cd /app/backend && python3 main.py &
-    cd /app/frontend && npm run dev -- --host 0.0.0.0 &
+    cd /app/frontend && npm run dev &
     
     log "Сервисы перезапущены"
 }
