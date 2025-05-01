@@ -8,7 +8,6 @@ import { isAdmin } from '@/components';
 
 export const useMenuItems = (items: MenuItemMainInfo[], curPage: string, setCurPage: Dispatch<SetStateAction<string>>): MenuItem[] => {
     const isAdminValue = isAdmin();
-    return useMemo((): MenuItem[] => {
         const menuItems: MenuItem[] = [];
         items.forEach((item) => {
             const isCurrent = item.currentItemUrl === curPage; 
@@ -34,5 +33,4 @@ export const useMenuItems = (items: MenuItemMainInfo[], curPage: string, setCurP
             });
         });
         return menuItems;
-    }, [items, curPage]);
 };

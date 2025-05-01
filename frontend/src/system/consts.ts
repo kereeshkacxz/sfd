@@ -47,6 +47,5 @@ export const MenuItemsInfo: MenuItemMainInfo[] = [
         currentItemUrl: 'data-source',
         title: "Источники данных",
         admin: true
-
     },
 ]
