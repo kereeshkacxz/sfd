@@ -17,11 +17,28 @@
       "static/chunks/main-app.js",
       "static/chunks/app/page.js"
     ],
-    "/data-source/page": [
+    "/notifications/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/app/data-source/page.css",
-      "static/chunks/app/data-source/page.js"
+      "static/css/app/notifications/page.css",
+      "static/chunks/app/notifications/page.js"
+    ],
+    "/tasks/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/tasks/page.css",
+      "static/chunks/app/tasks/page.js"
+    ],
+    "/statistics/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/statistics/page.js"
+    ],
+    "/accounts/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/accounts/page.css",
+      "static/chunks/app/accounts/page.js"
     ],
     "/triggers/page": [
       "static/chunks/webpack.js",
@@ -34,41 +51,6 @@
       "static/chunks/main-app.js",
       "static/css/app/triggers/[id]/page.css",
       "static/chunks/app/triggers/[id]/page.js"
-    ],
-    "/accounts/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/accounts/page.css",
-      "static/chunks/app/accounts/page.js"
-    ],
-    "/accounts/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/accounts/[id]/page.css",
-      "static/chunks/app/accounts/[id]/page.js"
-    ],
-    "/statistics/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/statistics/page.js"
-    ],
-    "/data-source/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/data-source/[id]/page.css",
-      "static/chunks/app/data-source/[id]/page.js"
-    ],
-    "/notifications/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/notifications/page.css",
-      "static/chunks/app/notifications/page.js"
-    ],
-    "/tasks/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/tasks/page.css",
-      "static/chunks/app/tasks/page.js"
     ]
   }
 }
