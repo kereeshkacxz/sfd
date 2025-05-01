@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Button, TextInput, TextArea, Select } from "@gravity-ui/uikit";
 import { Flex } from "@gravity-ui/uikit";
 
@@ -8,6 +8,7 @@ export type Field = {
     label: string;
     type: "text" | "password" | "email" | "textarea" | "select" | "file";
     options?: { value: string; label: string }[]; // для select
+    accept?: string; // для file
 };
 
 type DynamicFormProps = {
@@ -17,6 +18,7 @@ type DynamicFormProps = {
 
 export default function DynamicForm({ initialData, fields }: DynamicFormProps) {
     const [formData, setFormData] = useState(initialData);
+    const fileInputRef = useRef<HTMLInputElement>(null);
 
     const handleChange = (name: string, value: any) => {
         setFormData(prev => ({
@@ -33,6 +35,14 @@ export default function DynamicForm({ initialData, fields }: DynamicFormProps) {
     const handleDelete = () => {
         console.log("Deleting...", formData);
         // здесь логика удаления
+    };
+
+    const handleFileButtonClick = () => {
+        fileInputRef.current?.click();
+    };
+
+    const handleFileChange = (fieldName: string, e: React.ChangeEvent<HTMLInputElement>) => {
+        handleChange(fieldName, e.target.files?.[0]);
     };
 
     return (
@@ -69,8 +79,23 @@ export default function DynamicForm({ initialData, fields }: DynamicFormProps) {
                                 <label style={{ fontWeight: 500 }}>{field.label}</label>
                                 <input
                                     type="file"
-                                    onChange={(e) => handleChange(field.name, e.target.files?.[0])}
+                                    ref={fileInputRef}
+                                    accept={field.accept}
+                                    style={{ display: 'none' }}
+                                    onChange={(e) => handleFileChange(field.name, e)}
                                 />
+                                <Button 
+                                    view="action" 
+                                    size="xl"
+                                    onClick={handleFileButtonClick}
+                                >
+                                    {formData[field.name]?.name || "Выберите файл"}
+                                </Button>
+                                {formData[field.name] && (
+                                    <div style={{ fontSize: '14px', color: '#6D7986' }}>
+                                        Выбран: {formData[field.name].name}
+                                    </div>
+                                )}
                             </div>
                         );
                     default:

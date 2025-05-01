@@ -28,6 +28,36 @@
       "static/chunks/main-app.js",
       "static/css/app/tasks/page.css",
       "static/chunks/app/tasks/page.js"
+    ],
+    "/accounts/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/accounts/page.css",
+      "static/chunks/app/accounts/page.js"
+    ],
+    "/accounts/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/accounts/[id]/page.css",
+      "static/chunks/app/accounts/[id]/page.js"
+    ],
+    "/triggers/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/triggers/page.css",
+      "static/chunks/app/triggers/page.js"
+    ],
+    "/data-source/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/data-source/page.css",
+      "static/chunks/app/data-source/page.js"
+    ],
+    "/data-source/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/app/data-source/[id]/page.css",
+      "static/chunks/app/data-source/[id]/page.js"
     ]
   }
 }

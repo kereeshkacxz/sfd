@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { Flex, Text, Link } from "@gravity-ui/uikit";
-import List from "@/components/List/List"; // твоя компонента
+import { Flex, Text, Link, Button, Modal } from "@gravity-ui/uikit";
+import List from "@/components/List/List";
 import { isAdminWithRedirect } from "@/components";
+import DynamicForm, { Field } from "@/components/Form/Form";
 
 export default function DataSourcesPage() {
     isAdminWithRedirect();
     const [selectedDataSources, setSelectedDataSources] = useState<number[]>([]);
+    const [isFormVisible, setFormVisible] = useState(false);
 
     // Моковые данные источников данных
     const dataSources = [
@@ -32,13 +34,27 @@ export default function DataSourcesPage() {
                 view="primary" 
                 href={`/data-source/${source.id}`}
                 onClick={(e) => {
-                    e.stopPropagation(); // Останавливаем всплытие, чтобы не выбрать чекбокс
+                    e.stopPropagation();
                 }}
             >
                 {source.name}
             </Link>
         )
     }));
+
+    const handleAddDataSource = () => {
+        setFormVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setFormVisible(false);
+    };
+
+    // Поля для формы создания источника данных
+    const formFields: Field[] = [
+        { name: "name", label: "Название источника данных", type: "text" },
+        { name: "config", label: "Конфигурационный файл (JSON)", type: "file" },
+    ];
 
     return (
         <Flex direction="column" alignItems="center" style={{ marginTop: "40px" }} gap="4">
@@ -49,8 +65,36 @@ export default function DataSourcesPage() {
                 onItemSelect={handleSelectDataSource}
                 textIfNull="Нет источников данных"
                 withCheckbox={true}
-                baseHref="/data-source" // базовый путь нужен, если без Link, но тут мы внутри title уже обернули
+                baseHref="/data-source"
             />
+            
+            <div style={{ width: "100%", maxWidth: "500px", marginTop: "20px" }}>
+                <Button 
+                    view="action"
+                    size="l" 
+                    onClick={handleAddDataSource} 
+                    style={{ width: "100%" }}
+                >
+                    Добавить источник данных
+                </Button>
+            </div>
+
+            <Modal
+                open={isFormVisible}
+                onClose={handleCloseModal}
+            >
+                <div style={{ padding: "20px", maxWidth: "600px" }}>
+                    <Flex justifyContent="center" style={{ marginBottom: "20px" }}>
+                        <Text variant="header-1">
+                            Создание источника данных
+                        </Text>
+                    </Flex>
+                    <DynamicForm 
+                        initialData={{}} 
+                        fields={formFields} 
+                    />
+                </div>
+            </Modal>
         </Flex>
     );
 }

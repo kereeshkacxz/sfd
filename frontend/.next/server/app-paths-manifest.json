@@ -1,6 +1,9 @@
 {
-  "/favicon.ico/route": "app/favicon.ico/route.js",
   "/statistics/page": "app/statistics/page.js",
-  "/tasks/page": "app/tasks/page.js",
-  "/notifications/page": "app/notifications/page.js"
+  "/accounts/page": "app/accounts/page.js",
+  "/triggers/page": "app/triggers/page.js",
+  "/data-source/page": "app/data-source/page.js",
+  "/notifications/page": "app/notifications/page.js",
+  "/data-source/[id]/page": "app/data-source/[id]/page.js",
+  "/tasks/page": "app/tasks/page.js"
 }

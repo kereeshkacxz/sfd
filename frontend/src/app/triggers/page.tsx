@@ -1,15 +1,17 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
-import { Flex, Text, Link } from "@gravity-ui/uikit";
-import List from "@/components/List/List"; // твоя компонента
+// import { useRouter } from "next/navigation";
+import { Flex, Text, Link, Button, Modal } from "@gravity-ui/uikit";
+import List from "@/components/List/List";
 import { isAdminWithRedirect } from "@/components";
+import DynamicForm, { Field } from "@/components/Form/Form";
 
 export default function TriggersPage() {
     isAdminWithRedirect();
     const [selectedTriggers, setSelectedTriggers] = useState<number[]>([]);
-    const router = useRouter();
+    const [isFormVisible, setFormVisible] = useState(false);
+    // const router = useRouter();
 
     // Моковые данные триггеров
     const triggers = [
@@ -33,13 +35,28 @@ export default function TriggersPage() {
                 view="primary" 
                 href={`/triggers/${trigger.id}`}
                 onClick={(e) => {
-                    e.stopPropagation(); // Останавливаем всплытие, чтобы не выбрать чекбокс
+                    e.stopPropagation();
                 }}
             >
                 {trigger.name}
             </Link>
         )
     }));
+
+    const handleAddTrigger = () => {
+        setFormVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setFormVisible(false);
+    };
+
+    // Поля для формы создания триггера
+    const formFields: Field[] = [
+        { name: "name", label: "Название триггера", type: "text" },
+        { name: "jsonFile", label: "JSON файл конфигурации", type: "file" },
+        { name: "action", label: "Действие", type: "text"},
+    ];
 
     return (
         <Flex direction="column" alignItems="center" style={{ marginTop: "40px" }} gap="4">
@@ -50,8 +67,36 @@ export default function TriggersPage() {
                 onItemSelect={handleSelectTrigger}
                 textIfNull="Нет триггеров"
                 withCheckbox={true}
-                baseHref="/triggers" // базовый путь нужен, если без Link, но тут мы внутри title уже обернули
+                baseHref="/triggers"
             />
+            
+            <div style={{ width: "100%", maxWidth: "500px", marginTop: "20px" }}>
+                <Button 
+                    view="action"
+                    size="l" 
+                    onClick={handleAddTrigger} 
+                    style={{ width: "100%" }}
+                >
+                    Добавить триггер
+                </Button>
+            </div>
+
+            <Modal
+                open={isFormVisible}
+                onClose={handleCloseModal}
+            >
+                <div style={{ padding: "20px", maxWidth: "600px" }}>
+                    <Flex justifyContent="center" style={{ marginBottom: "20px" }}>
+                        <Text variant="header-1">
+                            Создание триггера
+                        </Text>
+                    </Flex>
+                    <DynamicForm 
+                        initialData={{}} 
+                        fields={formFields} 
+                    />
+                </div>
+            </Modal>
         </Flex>
     );
 }

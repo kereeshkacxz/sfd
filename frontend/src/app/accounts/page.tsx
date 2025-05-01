@@ -1,12 +1,13 @@
 "use client";
+import { useState } from "react";
 import List from "@/components/List/List";
-import { Text, Icon } from "@gravity-ui/uikit";
+import { Text, Icon, Button, Modal } from "@gravity-ui/uikit";
 import { Flex } from "@gravity-ui/uikit";
 import { PersonWorker } from "@gravity-ui/icons";
 import styles from './accounts.module.scss';
 import { isAdminWithRedirect } from "@/components";
+import DynamicForm, { Field } from "@/components/Form/Form";
 
-// Функция для форматирования элементов списка
 const formatAccountItem = (login: string) => (
   <div className={styles.accountItem}>
     <Icon data={PersonWorker} size={20} className={styles.accountIcon} />
@@ -16,7 +17,7 @@ const formatAccountItem = (login: string) => (
 
 export default function AccountsPage() {
     isAdminWithRedirect();
-    // Теперь массив содержит только логины
+    
     const accounts = [
         { id: 1, login: "worker1" },
         { id: 2, login: "worker2" },
@@ -24,11 +25,26 @@ export default function AccountsPage() {
         { id: 4, login: "manager1" },
     ];
 
-    // Форматируем элементы для списка
     const items = accounts.map(account => ({
         id: account.id,
         title: formatAccountItem(account.login)
     }));
+
+    const [isFormVisible, setFormVisible] = useState(false);
+
+    const formFields: Field[] = [
+        { name: "login", label: "Логин", type: "text" },
+        { name: "password", label: "Пароль", type: "password" },
+        { name: "email", label: "Email", type: "email" },
+    ];
+
+    const handleAddWorker = () => {
+        setFormVisible(true);
+    };
+
+    const handleCloseModal = () => {
+        setFormVisible(false);
+    };
 
     return (
         <>
@@ -43,6 +59,33 @@ export default function AccountsPage() {
                 withCheckbox={false}
                 baseHref="/accounts"
             />
+            <div style={{ width: "100%", maxWidth: "500px", margin: "20px auto 0" }}>
+                <Button 
+                    view="action"
+                    size="l" 
+                    onClick={handleAddWorker} 
+                    style={{ width: "100%" }}
+                >
+                    Добавить работника
+                </Button>
+            </div>
+
+            <Modal
+                open={isFormVisible}
+                onClose={handleCloseModal}
+            >
+                <div style={{ padding: "20px", maxWidth: "600px" }}>
+                    <Flex justifyContent="center" style={{ marginBottom: "20px" }}>
+                        <Text variant="header-1">
+                            Создание работника
+                        </Text>
+                    </Flex>
+                    <DynamicForm 
+                        initialData={{}} 
+                        fields={formFields} 
+                    />
+                </div>
+            </Modal>
         </>
     );
 }
