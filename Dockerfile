@@ -15,7 +15,7 @@ RUN git config --global pull.rebase false && \
 RUN git clone https://github.com/kereeshkacxz/sfd.git /app
 
 # Устанавливаем зависимости Python
-RUN pip install fastapi jwt python-dotenv python-multipart apscheduler uvicorn
+RUN pip install fastapi PyJWT python-dotenv python-multipart apscheduler uvicorn
 
 # Устанавливаем зависимости Node.js
 RUN cd /app/frontend && npm install
