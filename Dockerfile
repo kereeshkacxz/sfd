@@ -35,4 +35,4 @@ RUN ls -la /app/start.sh
 EXPOSE 8000 3000
 
 # Запускаем скрипт (убедитесь, что он использует правильные пути)
-CMD ["./start.sh"]
+CMD ["./simple-start.sh"]
