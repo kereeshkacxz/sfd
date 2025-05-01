@@ -12,10 +12,10 @@
       "static/css/app/not-found.css",
       "static/chunks/app/not-found.js"
     ],
-    "/page": [
+    "/statistics/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/statistics/page.js"
     ],
     "/notifications/page": [
       "static/chunks/webpack.js",
@@ -28,29 +28,6 @@
       "static/chunks/main-app.js",
       "static/css/app/tasks/page.css",
       "static/chunks/app/tasks/page.js"
-    ],
-    "/statistics/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/statistics/page.js"
-    ],
-    "/accounts/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/accounts/page.css",
-      "static/chunks/app/accounts/page.js"
-    ],
-    "/triggers/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/triggers/page.css",
-      "static/chunks/app/triggers/page.js"
-    ],
-    "/triggers/[id]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/css/app/triggers/[id]/page.css",
-      "static/chunks/app/triggers/[id]/page.js"
     ]
   }
 }

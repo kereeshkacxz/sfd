@@ -1,0 +1,37 @@
+[
+    {
+      "taskName": "Assembly",
+      "duration": 120,
+      "assignedTo": "worker_01"
+    },
+    {
+      "taskName": "Painting",
+      "duration": 60,
+      "assignedTo": "worker_02"
+    },
+    {
+      "taskName": "Testing",
+      "duration": 180,
+      "assignedTo": "worker_01"
+    },
+    {
+      "taskName": "Packaging",
+      "duration": 45,
+      "assignedTo": "worker_03"
+    },
+    {
+      "taskName": "Shipping",
+      "duration": 90,
+      "assignedTo": "worker_01"
+    },
+    {
+      "taskName": "Quality Control",
+      "duration": 120,
+      "assignedTo": "worker_02"
+    },
+    {
+      "taskName": "Maintenance",
+      "duration": 240,
+      "assignedTo": "worker_04"
+    }
+  ]

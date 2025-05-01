@@ -2324,7 +2324,8 @@
 }
 
 .g-card_type_container.g-card_view_raised.g-card_size_l {
-  --_--box-shadow: 0px 1px 6px var(--g-color-sfx-shadow-light),
+  --_--box-shadow:
+      0px 1px 6px var(--g-color-sfx-shadow-light),
       1px 3px 13px var(--g-color-sfx-shadow-light);
 }
 
@@ -2475,10 +2476,15 @@
   --_--text-color: var(--g-color-text-brand);
 }
 .g-avatar__image {
+  box-sizing: border-box;
   display: block;
   width: 100%;
   height: 100%;
+  border-radius: inherit;
   object-fit: cover;
+}
+.g-avatar__image_with-border {
+  border: 1px solid var(--g-color-line-generic);
 }
 .g-avatar__icon {
   color: var(--g-avatar-text-color, var(--_--text-color));
@@ -2841,18 +2847,19 @@
   white-space: nowrap;
   color: var(--g-color-text-primary);
 }
-.g-breadcrumbs__item:last-child {
+.g-breadcrumbs__item_current {
   font-weight: var(--g-text-accent-font-weight);
   overflow: hidden;
   margin: -2px;
   padding: 2px;
+  min-width: 25px;
 }
-.g-breadcrumbs__item:last-child .g-breadcrumbs__link {
+.g-breadcrumbs__item_current .g-breadcrumbs__link {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.g-breadcrumbs__item_calculating:last-child {
+.g-breadcrumbs__item_calculating {
   overflow: visible;
 }
 .g-breadcrumbs__link {
@@ -2886,9 +2893,6 @@
   align-items: center;
   color: var(--g-color-text-secondary);
   padding: 0 var(--g-spacing-2);
-}
-.g-breadcrumbs__more-button {
-  --g-button-border-radius: var(--g-focus-border-radius);
 }
 .g-breadcrumbs__menu {
   margin-inline: calc(-1 * var(--g-spacing-2));
@@ -2933,6 +2937,10 @@
 .g-control-label_size_l {
   font-size: var(--g-text-body-2-font-size);
   line-height: 18px;
+}
+.g-control-label_size_xl {
+  font-size: var(--g-text-body-2-font-size);
+  line-height: 25px;
 }
 .g-control-label__indicator {
   flex-shrink: 0;
@@ -3030,6 +3038,18 @@
   width: 17px;
   height: 17px;
 }
+.g-checkbox_size_xl .g-checkbox__icon-svg_type_tick {
+  width: 16px;
+  height: 13px;
+}
+.g-checkbox_size_xl .g-checkbox__icon-svg_type_dash {
+  width: 22px;
+  height: 22px;
+}
+.g-checkbox_size_xl .g-checkbox__indicator {
+  width: 24px;
+  height: 24px;
+}
 .g-checkbox:hover .g-checkbox__indicator::before {
   border-color: var(--g-color-line-generic-accent-hover);
 }
@@ -3076,6 +3096,9 @@
 }
 .g-help-mark__popover {
   padding: var(--g-spacing-3);
+}
+.g-help-mark__icon {
+  display: block;
 }
 /*!***********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/DefinitionList/DefinitionList.css ***!
@@ -3151,6 +3174,9 @@
 .g-definition-list__copy-button:focus-visible {
   opacity: 1;
 }
+.g-definition-list__note {
+  vertical-align: middle;
+}
 /*!*****************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/Modal/Modal.css ***!
   \*****************************************************************************************************************************************************************************************************************************************************************************************************************/
@@ -3188,12 +3214,12 @@
   overflow-x: hidden;
 }
 .g-modal__content {
+  height: var(--g-modal-height, auto);
+  width: var(--g-modal-width, auto);
   background-color: var(--g-color-base-modal);
   border-radius: var(--g-modal-border-radius, 5px);
   outline: none;
-  transition-property: transform;
-  transition-timing-function: ease-out;
-  transition-duration: 150ms;
+  transition: height 0.35s ease-in-out, transform 0.15s ease-out;
 }
 .g-modal__content_has-scroll {
   overflow-y: auto;
@@ -3228,6 +3254,9 @@
 .g-dialog-body_has-borders {
   border-block-start: 1px solid var(--g-color-line-generic);
   border-block-end: 1px solid var(--g-color-line-generic);
+}
+.g-dialog-body__content {
+  transition: height 0.35s ease-in-out;
 }
 /*!****************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/Dialog/DialogDivider/DialogDivider.css ***!
@@ -3396,10 +3425,14 @@
   \*********************************************************************************************************************************************************************************************************************************************************************************************************************/
 .g-divider {
   --_--content-gap: 8px;
-  --_--size: 1px;
+  --_--size: var(--g-divider-size, 1px);
+  --_--background: var(--g-divider-color, var(--g-color-line-generic));
+  background: var(--_--background);
 }
 .g-divider:not(:empty) {
-  border: none;
+  background: none;
+  width: auto;
+  height: auto;
   display: flex;
   align-items: center;
 }
@@ -3408,11 +3441,11 @@
 }
 .g-divider::before, .g-divider::after {
   flex-grow: 1;
-  background: var(--g-divider-color, var(--g-color-line-generic));
+  background: var(--_--background);
 }
 .g-divider_orientation_vertical {
+  width: var(--_--size);
   flex-direction: column;
-  border-inline-start: 1px solid var(--g-divider-color, var(--g-color-line-generic));
 }
 .g-divider_orientation_vertical::before, .g-divider_orientation_vertical::after {
   width: var(--_--size);
@@ -3424,7 +3457,7 @@
   margin-block-start: var(--_--content-gap);
 }
 .g-divider_orientation_horizontal {
-  border-block-start: 1px solid var(--g-divider-color, var(--g-color-line-generic));
+  height: var(--_--size);
 }
 .g-divider_orientation_horizontal::before, .g-divider_orientation_horizontal::after {
   height: var(--_--size);
@@ -3440,6 +3473,27 @@
 }
 .g-divider_align_end::after {
   display: none;
+}
+/*!**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/FilePreview/FilePreviewActions/DesktopActionsMenu/DesktopActionsMenu.css ***!
+  \**************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.g-file-preview-actions-desktop {
+  position: absolute;
+  z-index: 1;
+  inset-block-start: -12px;
+  inset-inline-end: -12px;
+  opacity: 0;
+  display: flex;
+  gap: var(--g-spacing-1);
+}
+.g-file-preview-actions-desktop__action-button {
+  width: 24px;
+  height: 24px;
+  justify-content: center;
+  align-items: center;
+}
+.g-file-preview-actions-desktop__action-icon-wrapper {
+  display: flex;
 }
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/controls/common/ClearButton/ClearButton.css ***!
@@ -3912,13 +3966,12 @@
 .g-label__text {
   font-family: var(--g-text-body-font-family);
   font-weight: var(--g-text-body-font-weight);
-  font-size: var(--g-text-body-1-font-size);
-  line-height: var(--g-text-body-1-line-height);
+  font-size: var(--g-text-body-short-font-size);
+  line-height: var(--g-text-body-short-line-height);
   display: flex;
   align-items: baseline;
   margin: 0 var(--_--margin-inline);
   width: 100%;
-  line-height: var(--_--height);
   text-align: center;
   white-space: nowrap;
   overflow: hidden;
@@ -4228,6 +4281,111 @@
 }
 .g-tabs-legacy_direction_vertical .g-tabs-legacy__item_disabled .g-tabs-legacy__item-title {
   color: var(--g-color-text-secondary);
+}
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/legacy/Breadcrumbs/Breadcrumbs.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.g-breadcrumbs-legacy__inner {
+  display: inline-flex;
+  align-items: center;
+  width: 100%;
+  min-height: 24px;
+  overflow: hidden;
+  gap: 4px;
+}
+.g-breadcrumbs-legacy__switcher {
+  padding: 0;
+  font-family: var(--g-text-body-font-family);
+  font-size: inherit;
+  font-weight: var(--g-text-body-font-weight);
+  color: inherit;
+  background: none;
+  border: none;
+  outline: none;
+  cursor: pointer;
+  color: var(--g-color-text-secondary);
+}
+.g-breadcrumbs-legacy__switcher:focus-visible {
+  outline: 2px solid var(--g-color-line-focus);
+}
+.g-breadcrumbs-legacy__item, .g-breadcrumbs-legacy__switcher {
+  flex-shrink: 1;
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+.g-breadcrumbs-legacy__item:focus-visible, .g-breadcrumbs-legacy__switcher:focus-visible {
+  outline: 2px solid var(--g-color-line-focus);
+  border-radius: var(--g-focus-border-radius);
+}
+.g-breadcrumbs-legacy_calculated_no .g-breadcrumbs-legacy__item {
+  overflow: visible;
+}
+.g-breadcrumbs-legacy__divider {
+  display: flex;
+  align-items: center;
+  color: var(--g-color-text-secondary);
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 80px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(0) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 0px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(1) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 8px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(2) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 16px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(3) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 24px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(4) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 32px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(5) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 40px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(6) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 48px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(7) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 56px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(8) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 64px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(9) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 72px !important;
+  /* stylelint-enable declaration-no-important */
+}
+.g-breadcrumbs-legacy__popup_staircase .g-menu .g-menu__list-item:nth-child(10) .g-menu__item {
+  /* stylelint-disable declaration-no-important */
+  padding-inline-start: 80px !important;
+  /* stylelint-enable declaration-no-important */
 }
 /*!**********************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/controls/TextInput/TextInput.css ***!
@@ -4774,7 +4932,7 @@
   inset-block-start: 100%;
   inset-inline-start: 0;
   width: 100%;
-  max-height: 90%;
+  max-height: 100%;
   will-change: transform;
 }
 .g-sheet__sheet_with-transition {
@@ -4808,7 +4966,7 @@
 }
 .g-sheet__sheet-scroll-container {
   box-sizing: border-box;
-  max-height: calc(90% - 20px);
+  max-height: calc(100% - 20px);
   overflow: hidden auto;
   overscroll-behavior-y: contain;
   background-color: var(--g-sheet-background-color, var(--g-color-base-float));
@@ -4817,10 +4975,17 @@
 .g-sheet__sheet-scroll-container_without-scroll {
   overflow: hidden;
 }
-.g-sheet__sheet-content-box {
+.g-sheet__sheet-margin-box {
   border: 1px solid transparent;
 }
-.g-sheet__sheet-content-box-border-compensation {
+.g-sheet__sheet-margin-box_always-full-height {
+  box-sizing: border-box;
+  height: 100%;
+}
+.g-sheet__sheet-margin-box_always-full-height .g-sheet__sheet-margin-box-border-compensation {
+  height: 100%;
+}
+.g-sheet__sheet-margin-box-border-compensation {
   margin: -1px;
 }
 .g-sheet__sheet-content {
@@ -4837,53 +5002,35 @@
   white-space: nowrap;
   text-overflow: ellipsis;
 }
-/*!*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
-  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/FilePreview/FilePreviewActions/FilePreviewActions.css ***!
-  \*******************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
-.g-file-preview-actions {
+/*!************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/FilePreview/FilePreviewActions/MobileActionsMenu/MobileActionsMenu.css ***!
+  \************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************/
+.g-file-preview-actions-mobile {
   --_-mobile-actions-menu-size: 28px;
 }
-.g-file-preview-actions__desktop-actions, .g-file-preview-actions__mobile-actions-menu {
+.g-file-preview-actions-mobile__actions-menu {
   position: absolute;
   z-index: 1;
-}
-.g-file-preview-actions__mobile-actions-menu {
   height: 24px;
   width: 24px;
   padding: 0;
   inset-block-start: 6px;
   inset-inline-end: 14px;
 }
-.g-file-preview-actions__mobile-actions-menu::before {
+.g-file-preview-actions-mobile__actions-menu::before {
   box-shadow: none;
 }
-.g-file-preview-actions__desktop-actions {
-  inset-block-start: -12px;
-  inset-inline-end: -12px;
-  opacity: 0;
-  display: flex;
-  gap: var(--g-spacing-1);
-}
-.g-file-preview-actions__desktop-action-button {
-  width: 24px;
-  height: 24px;
-  justify-content: center;
-  align-items: center;
-}
-.g-file-preview-actions__action-icon-wrapper {
-  display: flex;
-}
-.g-file-preview-actions__mobile-list-item {
+.g-file-preview-actions-mobile__list-item {
   display: flex;
   gap: var(--g-spacing-2);
   align-items: center;
   padding: 0 var(--g-spacing-4);
 }
-.g-file-preview-actions__mobile-list-item > svg {
+.g-file-preview-actions-mobile__list-item > svg {
   width: var(--_-mobile-icon-size);
   height: var(--_-mobile-icon-size);
 }
-.g-file-preview-actions__mobile-sheet {
+.g-file-preview-actions-mobile__sheet {
   --_-mobile-icon-size: 18px;
   --g-sheet-content-padding: var(--g-spacing-1) 0;
 }
@@ -4892,7 +5039,8 @@
   \*****************************************************************************************************************************************************************************************************************************************************************************************************************************/
 .g-file-preview {
   --_-box-shadow: none;
-  --_-border-radius: 4px;
+  --_-border-radius: 8px;
+  --_-icon-border-radius: 4px;
   --_-color-base-background: transparent;
   --_-action-button-size: 24px;
   position: relative;
@@ -4901,7 +5049,7 @@
 .g-file-preview:not(.g-file-preview_mobile):focus-within, .g-file-preview:not(.g-file-preview_mobile):hover {
   --_-color-base-background: var(--g-color-base-simple-hover);
 }
-.g-file-preview:hover .g-file-preview__actions-panel {
+.g-file-preview:hover .g-file-preview__actions-panel, .g-file-preview:focus-within .g-file-preview__actions-panel {
   opacity: 1;
 }
 .g-file-preview__card {
@@ -4918,6 +5066,9 @@
 }
 .g-file-preview__card_hoverable {
   background-color: var(--_-color-base-background);
+}
+.g-file-preview__card_selected {
+  outline: 1px solid var(--g-color-line-brand);
 }
 .g-file-preview__card::after {
   position: absolute;
@@ -4939,7 +5090,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  border-radius: 4px;
+  border-radius: var(--_-icon-border-radius);
   background-color: var(--g-color-base-generic-medium);
   height: 40px;
   width: 40px;
@@ -4987,6 +5138,27 @@
   object-fit: cover;
   height: 100%;
   width: 100%;
+}
+.g-file-preview_view_compact {
+  width: 48px;
+  height: 48px;
+}
+.g-file-preview_view_compact .g-file-preview__card {
+  width: 100%;
+  min-width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+  padding: 4px;
+}
+.g-file-preview_view_compact .g-file-preview__icon-container,
+.g-file-preview_view_compact .g-file-preview__image-container {
+  width: 100%;
+  height: 100%;
+}
+.g-file-preview_view_compact .g-file-preview__icon,
+.g-file-preview_view_compact .g-file-preview__image {
+  width: 100%;
+  height: 100%;
 }
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/NumberInput/NumericArrows/NumericArrows.css ***!
@@ -5538,6 +5710,9 @@
   inset: 0;
   z-index: -1;
 }
+.g-select-control__button:active::after {
+  transform: scale(1.042);
+}
 .g-select-control__button_view_clear {
   border-color: transparent;
 }
@@ -5575,17 +5750,17 @@
   --_--focus-outline-color: var(--g-color-line-danger);
   border-color: var(--g-color-line-danger);
 }
-.g-select-control__button:hover::after {
+.g-select-control__button:hover::before {
   background-color: var(--g-color-base-simple-hover);
 }
 .g-select-control__button_disabled {
   color: var(--g-color-text-hint);
   pointer-events: none;
 }
-.g-select-control__button_disabled::after {
+.g-select-control__button_disabled::before {
   background-color: var(--g-color-base-generic-accent-disabled);
 }
-.g-select-control__button_disabled::before {
+.g-select-control__button_disabled::after {
   border-color: transparent;
 }
 .g-select-control__button:not(.g-select-control__button_error):not(.g-select-control__button_disabled):not(.g-select-control__button_view_clear):hover::before {
@@ -6312,6 +6487,13 @@
 .g-radio_size_l .g-radio__disc::before {
   inset: 6px;
 }
+.g-radio_size_xl .g-radio__indicator {
+  width: 24px;
+  height: 24px;
+}
+.g-radio_size_xl .g-radio__disc::before {
+  inset: 8px;
+}
 .g-radio:hover .g-radio__indicator::before {
   border-color: var(--g-color-line-generic-accent-hover);
 }
@@ -6345,6 +6527,12 @@
 .g-radio-group_direction_horizontal.g-radio-group_size_l .g-radio-group__option:not(:last-child) {
   margin-inline-end: 15px;
 }
+.g-radio-group_direction_horizontal.g-radio-group_size_xl {
+  line-height: 24px;
+}
+.g-radio-group_direction_horizontal.g-radio-group_size_xl .g-radio-group__option:not(:last-child) {
+  margin-inline-end: 15px;
+}
 .g-radio-group_direction_vertical {
   display: flex;
   flex-direction: column;
@@ -6354,6 +6542,12 @@
 }
 .g-radio-group_direction_vertical.g-radio-group_size_l .g-radio-group__option:not(:last-child) {
   margin-block-end: 12px;
+}
+.g-radio-group_direction_vertical.g-radio-group_size_xl {
+  line-height: 24px;
+}
+.g-radio-group_direction_vertical.g-radio-group_size_xl .g-radio-group__option:not(:last-child) {
+  margin-block-end: 18px;
 }
 /*!*********************************************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/SegmentedRadioGroup/SegmentedRadioGroup.css ***!
@@ -6976,6 +7170,52 @@
 }
 .g-slider__top_size_xl {
   height: calc(var(--g-text-body-2-line-height) + 6px + 6px);
+}
+/*!*********************************************************************************************************************************************************************************************************************************************************************************************************************!*\
+  !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/Stepper/Stepper.css ***!
+  \*********************************************************************************************************************************************************************************************************************************************************************************************************************/
+.g-stepper {
+  --_--text-max-width: 180px;
+  --_--step-gap: var(--g-stepper-gap, var(--g-spacing-2));
+  list-style: none;
+  display: flex;
+  gap: var(--_--step-gap);
+}
+.g-stepper__list-item {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: var(--_--step-gap);
+  align-items: center;
+}
+.g-stepper__item {
+  max-width: var(--g-stepper-item-text-max-width, var(--_--text-max-width));
+}
+.g-stepper__item_selected:not(.g-stepper__item_disabled) {
+  --g-button-border-color: var(--g-color-line-brand);
+}
+.g-stepper__item_disabled {
+  cursor: default;
+}
+.g-stepper__item_disabled .g-stepper__item-text {
+  color: var(--g-color-text-hint);
+}
+.g-stepper__item-icon {
+  width: 16px;
+  height: 16px;
+}
+.g-stepper__item-icon_view_idle {
+  color: var(--g-color-text-secondary);
+}
+.g-stepper__item-icon_view_error {
+  color: var(--g-color-text-danger);
+}
+.g-stepper__item-icon_view_success {
+  color: var(--g-color-text-positive);
+}
+.g-stepper__separator {
+  display: flex;
+  align-items: center;
+  color: var(--g-color-text-secondary);
 }
 /*!***************************************************************************************************************************************************************************************************************************************************************************************************************!*\
   !*** css ./node_modules/next/dist/build/webpack/loaders/css-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[2]!./node_modules/next/dist/build/webpack/loaders/postcss-loader/src/index.js??ruleSet[1].rules[13].oneOf[10].use[3]!./node_modules/@gravity-ui/uikit/build/esm/components/Spin/Spin.css ***!
