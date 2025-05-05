@@ -1,56 +1,65 @@
 'use client';
 
-import React, { useEffect, useLayoutEffect, useState } from 'react';
-import { Theme, ThemeProvider, ToasterComponent, ToasterProvider } from '@gravity-ui/uikit';
-import { AsideHeader, FooterItem, LogoProps } from '@gravity-ui/navigation';
-import SFDImage from '../assets/icons/sfd.svg'; 
-import { DARK, DEFAULT_THEME, ThemeWrapper } from './theme-wrapper';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
+import {Loader, Theme, ThemeProvider, ToasterComponent, ToasterProvider} from '@gravity-ui/uikit';
+import {AsideHeader, FooterItem, LogoProps} from '@gravity-ui/navigation';
+import SFDImage from '../assets/icons/sfd.svg';
+import {DARK, DEFAULT_THEME, ThemeWrapper} from './theme-wrapper';
 import styles from './app.module.scss';
-import { useMenuItems } from './hooks/use-menu-items';
-import { MenuItemsInfo } from './consts';
-import { useRouter } from 'next/navigation';
-import { toaster } from '@gravity-ui/uikit/toaster-singleton';
+import {useMenuItems} from './hooks/use-menu-items';
+import {MenuItemsInfo} from './consts';
+import {useRouter} from 'next/navigation';
+import {toaster} from '@gravity-ui/uikit/toaster-singleton';
 import Authentication from '@/app/authentication/page';
-import { ArrowRightFromSquare } from '@gravity-ui/icons';
+import {ArrowRightFromSquare} from '@gravity-ui/icons';
 
 interface AppProps {
     children: React.ReactNode;
 }
 
-// Create a separate handler for authentication reload
 let reloadAuthHandler: (() => void) | null = null;
 
-export const App: React.FC<AppProps> = ({ children }) => {
-    const [theme, setTheme] = useState<Theme>(DEFAULT_THEME);
+export const App: React.FC<AppProps> = ({children}) => {
+    const [theme, setTheme] = useState<Theme | undefined>(undefined);
     const isDark = theme === DARK;
     const [isCompact, setIsCompact] = useState(false);
     const router = useRouter();
-    // Safe client-side initialization
     const [curPage, setCurPage] = useState('');
     const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    // Set curPage after component mounts
-    useEffect(() => {
+    // При монтировании читаем всё из localStorage и ставим нужное состояние.
+    useLayoutEffect(() => {
+        // theme из localStorage
+        const lsTheme = localStorage.getItem('theme') as Theme | null;
+        setTheme(lsTheme ?? DEFAULT_THEME);
+    });
+
+    useLayoutEffect(() => {
+        // curPage
         setCurPage(window.location.href.split('/')[3]);
+        // авторизация
+        setIsAuthorized(Boolean(localStorage.getItem('token')));
+        setIsLoading(false);
     }, []);
 
-    const reload = () => {
-        setIsAuthorized(localStorage.getItem('token') !== null);
-        items = useMenuItems(MenuItemsInfo, curPage, setCurPage);
+    const items = useMenuItems(MenuItemsInfo, curPage, setCurPage);
 
+    const reload = () => {
+        setIsLoading(true);
+        setTheme(localStorage.getItem('theme') ?? DEFAULT_THEME);
+        setIsAuthorized(Boolean(localStorage.getItem('token')));
+        setIsLoading(false);
     };
 
-    // Assign the reload function to our handler
-    useLayoutEffect(() => {
+    useEffect(() => {
         reloadAuthHandler = reload;
-        reload();
+        // не вызываем reload здесь — иначе Loader мгновенно исчезнет
     }, []);
 
     const onChangeCompact = () => {
         setIsCompact(!isCompact);
     };
-    
-    let items = useMenuItems(MenuItemsInfo, curPage, setCurPage);
 
     const asideHeaderContent: LogoProps = {
         icon: SFDImage,
@@ -61,8 +70,30 @@ export const App: React.FC<AppProps> = ({ children }) => {
         ),
         iconSize: 32,
         iconClassName: styles.logo,
-        onClick: () => {router.push('/'); setCurPage('')}
+        onClick: () => {
+            router.push('/');
+            setCurPage('');
+        },
     };
+
+    // Пока тема не определена или идет загрузка - показываем Loader
+    if (isLoading) {
+        return (
+            <div
+                style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100vh',
+                    backgroundColor: theme === 'light' ? 'white' : 'none',
+                }}
+            >
+                <ThemeWrapper setTheme={setTheme} isDark={isDark}>
+                    <Loader size="l" />
+                </ThemeWrapper>
+            </div>
+        );
+    }
 
     return (
         <ThemeProvider theme={theme} rootClassName={styles.root}>
@@ -80,28 +111,30 @@ export const App: React.FC<AppProps> = ({ children }) => {
                         headerDecoration
                         menuItems={items}
                         multipleTooltip
-                        renderFooter={
-                            ({compact, asideRef}) => (
-                                <React.Fragment><FooterItem
-                            item={{
-                                id: 'logout',
-                                icon: ArrowRightFromSquare,
-                                title: 'Выход',
-                                tooltipText: 'Выход',
-                                onItemClick: () => {
-                                    localStorage.removeItem('token');
-                                    localStorage.removeItem('admin');
-                                    localStorage.removeItem('siperadmin');
-                                    reload();
-                                },
-                            }}
-                            compact={compact}
-                        />
-                    </React.Fragment>)}
+                        renderFooter={({compact}) => (
+                            <>
+                                <FooterItem
+                                    item={{
+                                        id: 'logout',
+                                        icon: ArrowRightFromSquare,
+                                        title: 'Выход',
+                                        tooltipText: 'Выход',
+                                        onItemClick: () => {
+                                            setIsLoading(true);
+                                            localStorage.removeItem('token');
+                                            localStorage.removeItem('admin');
+                                            localStorage.removeItem('superadmin');
+                                            reload();
+                                        },
+                                    }}
+                                    compact={compact}
+                                />
+                            </>
+                        )}
                     />
                 ) : (
                     <ThemeWrapper setTheme={setTheme} isDark={isDark}>
-                        <Authentication/>
+                        <Authentication />
                     </ThemeWrapper>
                 )}
                 <ToasterComponent />
@@ -110,7 +143,7 @@ export const App: React.FC<AppProps> = ({ children }) => {
     );
 };
 
-// Export a function that calls the handler if it exists
+// Экспорт перезагрузки авторизации (чтобы с других компонентов можно было дергать)
 export function reloadAuth() {
     if (reloadAuthHandler) {
         reloadAuthHandler();

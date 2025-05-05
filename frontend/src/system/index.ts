@@ -1,2 +1,2 @@
-export * from './app'
-export * from './theme-wrapper'
+export * from './app';
+export * from './theme-wrapper';

@@ -27,6 +27,7 @@ export const ThemeWrapper: React.FC<AppProps> = ({children, setTheme, isDark}) =
                     view="outlined"
                     onClick={() => {
                         setTheme(isDark ? LIGHT : DARK);
+                        localStorage.setItem('theme', isDark ? LIGHT : DARK);
                     }}
                 >
                     <Icon data={isDark ? Sun : Moon} />

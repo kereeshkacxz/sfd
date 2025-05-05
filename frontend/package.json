@@ -10,7 +10,8 @@
     "lint:js": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint:styles": "stylelint '{styles,src}/**/*.scss'",
     "lint:prettier": "prettier --check '**/*.md'",
-    "lint": "npm run lint:js && npm run lint:styles && npm run lint:prettier"
+    "lint": "npm run lint:js && npm run lint:styles && npm run lint:prettier",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,scss,json,md}'"
   },
   "dependencies": {
     "@gravity-ui/icons": "^2.13.0",

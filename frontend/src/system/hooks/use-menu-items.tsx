@@ -1,17 +1,21 @@
-import { Dispatch, SetStateAction, useMemo } from 'react';
-import { MenuItem } from '@gravity-ui/navigation';
+import {Dispatch, SetStateAction} from 'react';
+import {MenuItem} from '@gravity-ui/navigation';
 
 import styles from './use-menu-items.module.scss';
-import { MenuItemMainInfo } from '../types';
+import {MenuItemMainInfo} from '../types';
 import Link from 'next/link';
-import { isAdmin } from '@/components';
+import {isAdmin} from '@/components';
 
-export const useMenuItems = (items: MenuItemMainInfo[], curPage: string, setCurPage: Dispatch<SetStateAction<string>>): MenuItem[] => {
+export const useMenuItems = (
+    items: MenuItemMainInfo[],
+    curPage: string,
+    setCurPage: Dispatch<SetStateAction<string>>,
+): MenuItem[] => {
     const isAdminValue = isAdmin();
-        const menuItems: MenuItem[] = [];
-        items.forEach((item) => {
-            const isCurrent = item.currentItemUrl === curPage; 
-            if(isAdminValue || item.admin === undefined)
+    const menuItems: MenuItem[] = [];
+    items.forEach((item) => {
+        const isCurrent = item.currentItemUrl === curPage;
+        if (isAdminValue || item.admin === undefined)
             menuItems.push({
                 ...item,
                 title: item.title,
@@ -23,14 +27,16 @@ export const useMenuItems = (items: MenuItemMainInfo[], curPage: string, setCurP
                     return (
                         <Link
                             className={styles.linkWrapper}
-                            href={`/${item.id}`} 
-                            onClick={() => {setCurPage(item.id)}}
+                            href={`/${item.id}`}
+                            onClick={() => {
+                                setCurPage(item.id);
+                            }}
                         >
                             {component}
                         </Link>
                     );
                 },
             });
-        });
-        return menuItems;
+    });
+    return menuItems;
 };
