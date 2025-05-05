@@ -1,10 +1,19 @@
+import sys
+import os
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from backend.mocks.data import users, Role
+# Добавляем корневую директорию backend/ в sys.path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from backend.mocks.data import users, Role  # Абсолютный импорт
+from fastapi import APIRouter
 from backend.schemas.user import UserCreate, UserLogin, UserOut
 from backend.utils.auth import create_access_token, get_current_user
 
-router = APIRouter(prefix="/api/auth", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["Auth"])
+
+@router.get("/users")
+def get_users():
+    return users
 
 
 @router.post("/register")
