@@ -1,32 +1,32 @@
 [
-    {
-      "workerID": "worker_01",
-      "name": "Иванов Иван",
-      "status": "active"
-    },
-    {
-      "workerID": "worker_02",
-      "name": "Петров Петр",
-      "status": "inactive"
-    },
-    {
-      "workerID": "worker_03",
-      "name": "Сидорова Анна",
-      "status": "active"
-    },
-    {
-      "workerID": "worker_04",
-      "name": "Кузнецов Алексей",
-      "status": "vacation"
-    },
-    {
-      "workerID": "worker_05",
-      "name": "Смирнова Елена",
-      "status": "active"
-    },
-    {
-      "workerID": "worker_06",
-      "name": "Федоров Дмитрий",
-      "status": "inactive"
-    }
-  ]
+  {
+    "workerID": "worker_01",
+    "name": "Иванов Иван",
+    "status": "active"
+  },
+  {
+    "workerID": "worker_02",
+    "name": "Петров Петр",
+    "status": "inactive"
+  },
+  {
+    "workerID": "worker_03",
+    "name": "Сидорова Анна",
+    "status": "active"
+  },
+  {
+    "workerID": "worker_04",
+    "name": "Кузнецов Алексей",
+    "status": "vacation"
+  },
+  {
+    "workerID": "worker_05",
+    "name": "Смирнова Елена",
+    "status": "active"
+  },
+  {
+    "workerID": "worker_06",
+    "name": "Федоров Дмитрий",
+    "status": "inactive"
+  }
+]

@@ -1,51 +1,45 @@
-import {
-    ListCheck,
-    Bell,
-    ChartPie,
-    Binoculars,
-    DatabasesFill
-} from '@gravity-ui/icons';
-import Avatar from '@/assets/icons/avatar.svg'
-import { MenuItemMainInfo } from './types';
+import {Bell, Binoculars, ChartPie, DatabasesFill, ListCheck} from '@gravity-ui/icons';
+import Avatar from '@/assets/icons/avatar.svg';
+import {MenuItemMainInfo} from './types';
 
 export const MenuItemsInfo: MenuItemMainInfo[] = [
     {
         id: 'tasks',
         icon: ListCheck,
         currentItemUrl: 'tasks',
-        title: "Задачи"
+        title: 'Задачи',
     },
     {
         id: 'notifications',
         icon: Bell,
         currentItemUrl: 'notifications',
-        title: "Уведомления"
+        title: 'Уведомления',
     },
     {
         id: 'statistics',
         icon: ChartPie,
         currentItemUrl: 'statistics',
-        title: "Статистика"
+        title: 'Статистика',
     },
     {
         id: 'accounts',
         icon: Avatar,
         currentItemUrl: 'accounts',
-        title: "Аккаунты",
-        admin: true
+        title: 'Аккаунты',
+        admin: true,
     },
     {
         id: 'triggers',
         icon: Binoculars,
         currentItemUrl: 'triggers',
-        title: "Триггеры",
-        admin: true
+        title: 'Триггеры',
+        admin: true,
     },
     {
         id: 'data-source',
         icon: DatabasesFill,
         currentItemUrl: 'data-source',
-        title: "Источники данных",
-        admin: true
+        title: 'Источники данных',
+        admin: true,
     },
-]
+];

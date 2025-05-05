@@ -1,1 +1,1 @@
-export * from './theme-wrapper'
+export * from './theme-wrapper';

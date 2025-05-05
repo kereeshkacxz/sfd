@@ -1,5 +1,5 @@
 import type {Metadata} from 'next';
-import {DEFAULT_BODY_CLASSNAME, App} from '../system';
+import {App, DEFAULT_BODY_CLASSNAME} from '../system';
 
 import '@gravity-ui/uikit/styles/fonts.css';
 import '@gravity-ui/uikit/styles/styles.css';
@@ -8,8 +8,8 @@ import '../styles/globals.scss';
 export const metadata: Metadata = {
     title: 'Smart Factory Dashboard',
     icons: {
-        icon: './favicon.ico'
-      },
+        icon: './favicon.ico',
+    },
 };
 
 export default function RootLayout({children}: {children: React.ReactNode}) {

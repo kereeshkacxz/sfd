@@ -10,4 +10,4 @@ sleep 1
 
 # Запускаем фронтенд (Next.js)
 cd /app/frontend
-npx serve -s build -l 3000
+npm start

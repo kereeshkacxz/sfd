@@ -10,7 +10,8 @@
     "lint:js": "eslint --ext .js,.jsx,.ts,.tsx .",
     "lint:styles": "stylelint '{styles,src}/**/*.scss'",
     "lint:prettier": "prettier --check '**/*.md'",
-    "lint": "npm run lint:js && npm run lint:styles && npm run lint:prettier"
+    "lint": "npm run lint:js && npm run lint:styles && npm run lint:prettier",
+    "format": "prettier --write '**/*.{js,jsx,ts,tsx,scss,json,md}'"
   },
   "dependencies": {
     "@gravity-ui/icons": "^2.13.0",
@@ -20,7 +21,8 @@
     "next": "^15.0.4",
     "react": "^18.3.1",
     "react-chartjs-2": "^5.3.0",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "serve": "^14.2.4"
   },
   "devDependencies": {
     "@gravity-ui/browserslist-config": "^4.3.0",
