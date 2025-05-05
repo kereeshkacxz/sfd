@@ -1,38 +1,25 @@
-FROM nikolaik/python-nodejs:python3.11-nodejs18
+# Используем образ с Python и Node.js
+FROM nikolaik/python-nodejs:python3.12-nodejs18
 
 WORKDIR /app
 
-# Установка git и очистка кеша
-RUN apt-get update && apt-get install -y git && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Настройка git
-RUN git config --global pull.rebase false && \
-    git config --global pull.ff only
-
-# Клонируем репозиторий
-RUN git clone https://github.com/kereeshkacxz/sfd.git /app
+# Копируем локальные файлы в контейнер
+COPY . /app/
 
 # Устанавливаем зависимости Python
-RUN pip install fastapi jose python-dotenv python-multipart apscheduler uvicorn
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Устанавливаем зависимости Node.js
-RUN cd /app/frontend && npm install
+# Устанавливаем зависимости Node.js и собираем фронтенд
+RUN cd frontend && npm install && npx update-browserslist-db@latest && npm run build
 
-# Копируем скрипты запуска (если они отличаются от тех, что в репозитории)
-# Если скрипты уже есть в репозитории, эти строки не нужны
-# COPY start.sh /app/
-# COPY update-and-restart.sh /app/
-# COPY simple-start.sh /app/
-
-# Даем права на выполнение
+# Даём права на выполнение скриптов
 RUN chmod +x /app/start.sh /app/update-and-restart.sh /app/simple-start.sh
 
-# Проверяем, что файлы существуют
-RUN ls -la /app/start.sh
+# Устанавливаем PYTHONPATH
+ENV PYTHONPATH=/app
 
+# Открываем порты для бэкенда и фронтенда
 EXPOSE 8000 3000
 
-# Запускаем скрипт (убедитесь, что он использует правильные пути)
+# Запускаем скрипт
 CMD ["./simple-start.sh"]

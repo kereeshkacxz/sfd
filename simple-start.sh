@@ -1,10 +1,13 @@
 #!/bin/bash
 
-# Запуск бэкенда в фоновом режиме
-cd /app/backend && python3 main.py &
+# Запускаем бэкенд (FastAPI) в фоновом режиме
+cd /app
+export PYTHONPATH=/app:$PYTHONPATH
+uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
 
-# Запуск фронтенда с доступом извне контейнера
-cd /app/frontend && npm run dev &
+# Ждём секунду, чтобы бэкенд успел запуститься
+sleep 1
 
-# Ждем бесконечно, чтобы контейнер не завершил работу
-wait
+# Запускаем фронтенд (Next.js)
+cd /app/frontend
+npx serve -s build -l 3000
