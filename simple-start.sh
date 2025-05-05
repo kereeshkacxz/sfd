@@ -10,4 +10,4 @@ sleep 1
 
 # Запускаем фронтенд (Next.js)
 cd /app/frontend
-npm start
+npm start &

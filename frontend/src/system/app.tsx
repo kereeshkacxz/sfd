@@ -28,28 +28,24 @@ export const App: React.FC<AppProps> = ({children}) => {
     const [isAuthorized, setIsAuthorized] = useState<boolean>(false);
     const [isLoading, setIsLoading] = useState<boolean>(true);
 
-    // При монтировании читаем всё из localStorage и ставим нужное состояние.
-    useLayoutEffect(() => {
-        // theme из localStorage
-        const lsTheme = localStorage.getItem('theme') as Theme | null;
-        setTheme(lsTheme ?? DEFAULT_THEME);
-    });
-
     useLayoutEffect(() => {
         // curPage
         setCurPage(window.location.href.split('/')[3]);
         // авторизация
         setIsAuthorized(Boolean(localStorage.getItem('token')));
         setIsLoading(false);
+        const lsTheme = localStorage.getItem('theme') as Theme | null;
+        setTheme(lsTheme ?? DEFAULT_THEME);
     }, []);
 
-    const items = useMenuItems(MenuItemsInfo, curPage, setCurPage);
+    let items = useMenuItems(MenuItemsInfo, curPage, setCurPage);
 
     const reload = () => {
         setIsLoading(true);
         setTheme(localStorage.getItem('theme') ?? DEFAULT_THEME);
         setIsAuthorized(Boolean(localStorage.getItem('token')));
         setIsLoading(false);
+        items = useMenuItems(MenuItemsInfo, curPage, setCurPage);
     };
 
     useEffect(() => {

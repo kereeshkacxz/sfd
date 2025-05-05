@@ -16,6 +16,7 @@
   "dependencies": {
     "@gravity-ui/icons": "^2.13.0",
     "@gravity-ui/navigation": "^3.1.1",
+    "axios": "^1.9.0",
     "bem-cn-lite": "^4.1.0",
     "chart.js": "^4.4.9",
     "next": "^15.0.4",

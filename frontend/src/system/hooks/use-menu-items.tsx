@@ -4,14 +4,14 @@ import {MenuItem} from '@gravity-ui/navigation';
 import styles from './use-menu-items.module.scss';
 import {MenuItemMainInfo} from '../types';
 import Link from 'next/link';
-import {isAdmin} from '@/components';
+import {isAdminFunc} from '@/components';
 
 export const useMenuItems = (
     items: MenuItemMainInfo[],
     curPage: string,
     setCurPage: Dispatch<SetStateAction<string>>,
 ): MenuItem[] => {
-    const isAdminValue = isAdmin();
+    const isAdminValue = isAdminFunc();
     const menuItems: MenuItem[] = [];
     items.forEach((item) => {
         const isCurrent = item.currentItemUrl === curPage;

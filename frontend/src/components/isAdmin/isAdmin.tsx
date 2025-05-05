@@ -10,7 +10,7 @@ export function isAdminWithRedirect() {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const adminStatus = localStorage.getItem('admin') === 'true';
+            const adminStatus = isAdminFunc();
             setIsAdmin(adminStatus);
 
             if (!adminStatus) {
@@ -24,9 +24,18 @@ export function isAdminWithRedirect() {
     return {isAdmin, isCheckingAuth};
 }
 
-export function isAdmin() {
+export function isAdminFunc() {
     if (typeof window === 'undefined') {
         return false;
     }
-    return localStorage.getItem('admin') === 'true';
+    return (
+        localStorage.getItem('role') === 'admin' || localStorage.getItem('role') === 'superadmin'
+    );
+}
+
+export function isSuperAdminFunc() {
+    if (typeof window === 'undefined') {
+        return false;
+    }
+    return localStorage.getItem('role') === 'superadmin';
 }

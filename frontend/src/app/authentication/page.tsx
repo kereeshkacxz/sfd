@@ -4,6 +4,7 @@ import {useState} from 'react';
 
 import styles from './authentication.module.scss';
 import {reloadAuth} from '@/system';
+import {apiRequest} from '@/utils';
 
 export default function Authentication() {
     const [login, setLogin] = useState('');
@@ -14,7 +15,7 @@ export default function Authentication() {
     const [passwordErrorMessage, setPasswordErrorMessage] = useState('');
     const {add} = useToaster();
 
-    const authorize = () => {
+    const authorize = async () => {
         let flag = false;
         if (login.length < 5) {
             setIsLoginInvalid(true);
@@ -29,21 +30,44 @@ export default function Authentication() {
         }
         if (flag) return;
 
-        localStorage.setItem('token', login);
+        try {
+            const data = await apiRequest(
+                'auth/login',
+                'post',
+                {
+                    grant_type: 'password',
+                    username: login,
+                    password: password,
+                },
+                undefined,
+                true,
+            );
+            // Если вход успешный, продолжаем:
+            add({
+                title: `Вы успешно авторизованы!`,
+                name: 'successful_authorization',
+                theme: 'success',
+                autoHiding: 2000,
+            });
+            localStorage.setItem('token', data.access_token);
+            const dataAdmin = await apiRequest(
+                'auth/me',
+                'get',
+                {},
+                localStorage.getItem('token') ?? undefined,
+            );
+            localStorage.setItem('role', dataAdmin.role);
 
-        if (login === 'superadmin') {
-            localStorage.setItem('superadmin', 'true');
-        } else if (login === 'admin') {
-            localStorage.setItem('admin', 'true');
+            reloadAuth();
+        } catch (error) {
+            add({
+                title: 'Неправильный логин или пароль!',
+                name: 'danger_authorization',
+                theme: 'danger',
+                autoHiding: 2000,
+            });
+            return;
         }
-
-        add({
-            title: `Вы успешно авторизованы!`,
-            name: 'successful_authorization',
-            theme: 'success',
-            autoHiding: 2000,
-        });
-        reloadAuth();
     };
 
     return (
