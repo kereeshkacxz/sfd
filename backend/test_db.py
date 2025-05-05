@@ -10,3 +10,5 @@ try:
             print(row)
 except Exception as e:
     print(f"Ошибка подключения: {e}")
+
+# cmd: python test_db.py
