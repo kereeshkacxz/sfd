@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException
-from mocks.data import users, tasks, notifications, Role
-from schemas.worker import WorkerOut
-from schemas.task import TaskOut
-from schemas.notification import NotificationOut
-from utils.auth import get_current_user
+from backend.mocks.data import users, tasks, notifications, Role
+from backend.schemas.worker import WorkerOut
+from backend.schemas.task import TaskOut
+from backend.schemas.notification import NotificationOut
+from backend.utils.auth import get_current_user
 
 router = APIRouter(prefix="/api/workers", tags=["workers"])
 

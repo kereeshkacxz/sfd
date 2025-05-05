@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-from mocks.data import users, Role
-from schemas.user import UserCreate, UserLogin, UserOut
-from utils.auth import create_access_token, get_current_user
+from backend.mocks.data import users, Role
+from backend.schemas.user import UserCreate, UserLogin, UserOut
+from backend.utils.auth import create_access_token, get_current_user
 
 router = APIRouter(prefix="/api/auth", tags=["auth"])
 

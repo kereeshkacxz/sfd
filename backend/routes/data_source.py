@@ -1,13 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException
-from mocks.data import data_source_settings, data_source_objects, Role
-from schemas.data_source import (
+from backend.mocks.data import data_source_settings, data_source_objects, Role
+from backend.schemas.data_source import (
     DataSourceSettings,
     DataSourceSettingsUpdate,
     DataSourceObjectCreate,
     DataSourceObjectUpdate,
     DataSourceObjectOut
 )
-from utils.auth import get_current_user
+from backend.utils.auth import get_current_user
 
 router = APIRouter(prefix="/api/data-source", tags=["data-source"])
 

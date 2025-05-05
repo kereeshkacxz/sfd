@@ -1,14 +1,14 @@
-from jose import jwt
+import jwt
 import os
 from datetime import datetime, timedelta
 from fastapi import HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer
 from dotenv import load_dotenv
-from mocks.data import users, Role
+from backend.mocks.data import users, Role
 
 load_dotenv()
 
-SECRET_KEY = os.getenv("SECRET_KEY")
+SECRET_KEY = "very-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 

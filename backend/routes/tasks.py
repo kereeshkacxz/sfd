@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from mocks.data import tasks, users, Role, TaskStatus
-from schemas.task import TaskCreate, TaskUpdate, TaskOut
-from utils.auth import get_current_user
+from backend.mocks.data import tasks, users, Role, TaskStatus
+from backend.schemas.task import TaskCreate, TaskUpdate, TaskOut
+from backend.utils.auth import get_current_user
 
 router = APIRouter(prefix="/api/tasks", tags=["tasks"])
 

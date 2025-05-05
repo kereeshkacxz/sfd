@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
-from mocks.data import triggers, Role
-from schemas.trigger import TriggerCreate, TriggerUpdate, TriggerOut
-from utils.auth import get_current_user
+from backend.mocks.data import triggers, Role
+from backend.schemas.trigger import TriggerCreate, TriggerUpdate, TriggerOut
+from backend.utils.auth import get_current_user
 
 router = APIRouter(prefix="/api/triggers", tags=["triggers"])
 

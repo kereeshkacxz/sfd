@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from mocks.data import TaskStatus
+from backend.mocks.data import TaskStatus
 
 class TaskCreate(BaseModel):
     title: str

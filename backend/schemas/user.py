@@ -1,5 +1,5 @@
 from pydantic import BaseModel
-from mocks.data import Role
+from backend.mocks.data import Role
 
 class UserCreate(BaseModel):
     login: str

@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException
-from mocks.data import machines, notifications, Role, MachineStatus
-from schemas.machine import MachineCreate, MachineUpdate, MachineOut
-from schemas.notification import NotificationOut
-from utils.auth import get_current_user
+from backend.mocks.data import machines, notifications, Role, MachineStatus
+from backend.schemas.machine import MachineCreate, MachineUpdate, MachineOut
+from backend.schemas.notification import NotificationOut
+from backend.utils.auth import get_current_user
 
 router = APIRouter(prefix="/api/data-source/machines", tags=["machines"])
 

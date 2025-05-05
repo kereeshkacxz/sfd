@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from typing import List, Dict
-from mocks.data import ObjectType
+from backend.mocks.data import ObjectType
 
 
 class DataSourceSettings(BaseModel):

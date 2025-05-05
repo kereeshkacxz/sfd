@@ -1,5 +1,5 @@
 from pydantic import BaseModel  # Импортируем BaseModel из pydantic
-from mocks.data import Role
+from backend.mocks.data import Role
 
 class WorkerOut(BaseModel):
     id: int

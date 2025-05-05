@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends
-from mocks.data import notifications, Role
-from schemas.notification import NotificationOut
-from utils.auth import get_current_user
+from backend.mocks.data import notifications, Role
+from backend.schemas.notification import NotificationOut
+from backend.utils.auth import get_current_user
 
 router = APIRouter(prefix="/api/notifications", tags=["notifications"])
 

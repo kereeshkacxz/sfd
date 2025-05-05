@@ -1,5 +1,5 @@
 from apscheduler.schedulers.asyncio import AsyncIOScheduler
-from mocks.data import (
+from backend.mocks.data import (
     data_source_settings, data_source_objects, tasks, notifications, machines, users, triggers, Role
 )
 from datetime import datetime
@@ -7,7 +7,7 @@ from datetime import datetime
 scheduler = AsyncIOScheduler()
 
 
-async def generate_data():
+def generate_data():
     # Получаем настройки
     frequency = data_source_settings["frequency"]
     object_types = data_source_settings["object_types"]
@@ -73,3 +73,8 @@ async def generate_data():
                         "user_id": 3  # worker1
                     }
                     notifications.append(new_notification)
+
+
+def start_generator():
+    scheduler.add_job(generate_data, "interval", seconds=data_source_settings["frequency"])
+    scheduler.start()
