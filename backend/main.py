@@ -8,7 +8,7 @@ app = FastAPI()
 # Создание таблиц (если их нет)
 Base.metadata.create_all(bind=engine)
 
-# Подключение маршрутов
+# Подключение маршрутов с глобальным префиксом /api
 app.include_router(auth)
 app.include_router(tasks)
 app.include_router(notifications)

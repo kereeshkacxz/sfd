@@ -1,61 +1,104 @@
 from fastapi import APIRouter, Depends, HTTPException
-from backend.mocks.data import users, tasks, notifications, Role
-from backend.schemas.worker import WorkerOut
-from backend.schemas.task import TaskOut
-from backend.schemas.notification import NotificationOut
+from sqlalchemy.orm import Session
+from backend.database import get_db
+from backend.models.user import User  # Предполагаем, что модель User уже есть
+from backend.mocks.data import Role
 from backend.utils.auth import get_current_user
+from datetime import datetime
 
-router = APIRouter(prefix="/api/workers", tags=["workers"])
+router = APIRouter(prefix="/api/workers", tags=["Workers"])
 
 
-@router.get("/", response_model=list[WorkerOut])
-def get_workers(current_user: dict = Depends(get_current_user)):
+@router.get("/")
+def get_workers(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    # Проверяем права доступа (только admin или superadmin могут просматривать)
     if current_user["role"] not in [Role.admin, Role.superadmin]:
         raise HTTPException(status_code=403, detail="Only admin or superadmin can view workers")
-    return [user for user in users if user["role"] == Role.worker]
+
+    # Получаем всех пользователей с ролью worker
+    workers = db.query(User).filter(User.role == Role.worker).all()
+    return workers
 
 
-@router.get("/{id}/tasks", response_model=list[TaskOut])
-def get_worker_tasks(id: int, current_user: dict = Depends(get_current_user)):
-    worker = next((u for u in users if u["id"] == id and u["role"] == Role.worker), None)
-    if not worker:
-        raise HTTPException(status_code=404, detail="Worker not found")
-
-    if current_user["role"] == Role.worker and current_user["id"] != id:
-        raise HTTPException(status_code=403, detail="Not authorized to view this worker's tasks")
-
-    return [task for task in tasks if task["assigned_to"] == id]
-
-
-@router.get("/{id}/notifications", response_model=list[NotificationOut])
-def get_worker_notifications(id: int, current_user: dict = Depends(get_current_user)):
-    worker = next((u for u in users if u["id"] == id and u["role"] == Role.worker), None)
-    if not worker:
-        raise HTTPException(status_code=404, detail="Worker not found")
-
-    if current_user["role"] == Role.worker and current_user["id"] != id:
-        raise HTTPException(status_code=403, detail="Not authorized to view this worker's notifications")
-
-    return [notification for notification in notifications if notification["user_id"] == id]
-
-
-@router.get("/{id}/statistics")
-def get_worker_statistics(id: int, current_user: dict = Depends(get_current_user)):
-    worker = next((u for u in users if u["id"] == id and u["role"] == Role.worker), None)
-    if not worker:
-        raise HTTPException(status_code=404, detail="Worker not found")
-
+@router.post("/")
+def create_worker(
+        login: str,
+        password: str,
+        email: str,
+        db: Session = Depends(get_db),
+        current_user: dict = Depends(get_current_user)
+):
+    # Проверяем права доступа (только admin или superadmin могут создавать)
     if current_user["role"] not in [Role.admin, Role.superadmin]:
-        raise HTTPException(status_code=403, detail="Only admin or superadmin can view worker statistics")
+        raise HTTPException(status_code=403, detail="Only admin or superadmin can create workers")
 
-    # Подсчитываем статистику
-    worker_tasks = [task for task in tasks if task["assigned_to"] == id]
-    completed_tasks = len([task for task in worker_tasks if task["status"] == "completed"])
-    total_tasks = len(worker_tasks)
+    # Проверяем уникальность login и email
+    if db.query(User).filter(User.login == login).first():
+        raise HTTPException(status_code=400, detail="Login already exists")
+    if db.query(User).filter(User.email == email).first():
+        raise HTTPException(status_code=400, detail="Email already exists")
 
-    return {
-        "worker_id": id,
-        "total_tasks": total_tasks,
-        "completed_tasks": completed_tasks,
-        "completion_rate": (completed_tasks / total_tasks * 100) if total_tasks > 0 else 0
-    }
+    # Временное сохранение пароля как есть (нужно добавить хеширование, если требуется)
+    db_worker = User(
+        login=login,
+        password_hash=password,
+        email=email,
+        role=Role.worker,
+        updated_at=datetime.utcnow()
+    )
+    db.add(db_worker)
+    db.commit()
+    db.refresh(db_worker)
+    return db_worker
+
+
+@router.get("/{worker_id}")
+def get_worker(worker_id: int, db: Session = Depends(get_db)):
+    worker = db.query(User).filter(User.id == worker_id, User.role == Role.worker).first()
+    if not worker:
+        raise HTTPException(status_code=404, detail="Worker not found")
+    return worker
+
+
+@router.put("/{worker_id}")
+def update_worker(
+        worker_id: int,
+        login: str | None = None,
+        password: str | None = None,
+        email: str | None = None,
+        db: Session = Depends(get_db)
+):
+    worker = db.query(User).filter(User.id == worker_id, User.role == Role.worker).first()
+    if not worker:
+        raise HTTPException(status_code=404, detail="Worker not found")
+
+    if login and db.query(User).filter(User.login == login).first() and login != worker.login:
+        raise HTTPException(status_code=400, detail="Login already exists")
+    if email and db.query(User).filter(User.email == email).first() and email != worker.email:
+        raise HTTPException(status_code=400, detail="Email already exists")
+
+    if login:
+        worker.login = login
+    if password:
+        worker.password_hash = password  # Временное решение, нужно хеширование
+    if email:
+        worker.email = email
+    worker.updated_at = datetime.utcnow()
+
+    db.commit()
+    db.refresh(worker)
+    return worker
+
+
+@router.delete("/{worker_id}")
+def delete_worker(worker_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    # Проверяем права доступа
+    if current_user["role"] not in [Role.admin, Role.superadmin]:
+        raise HTTPException(status_code=403, detail="Only admin or superadmin can delete workers")
+
+    worker = db.query(User).filter(User.id == worker_id, User.role == Role.worker).first()
+    if not worker:
+        raise HTTPException(status_code=404, detail="Worker not found")
+    db.delete(worker)
+    db.commit()
+    return {"message": "Worker deleted successfully"}

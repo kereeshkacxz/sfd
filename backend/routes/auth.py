@@ -2,82 +2,87 @@ import sys
 import os
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
-# Добавляем корневую директорию backend/ в sys.path
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from backend.mocks.data import users, Role  # Абсолютный импорт
-from fastapi import APIRouter
-from backend.schemas.user import UserCreate, UserLogin, UserOut
+from sqlalchemy.orm import Session
+from backend.database import get_db
+from backend.models.user import User
+from backend.schemas.user import UserCreate, UserOut
 from backend.utils.auth import create_access_token, get_current_user
+from backend.mocks.data import Role
+from datetime import datetime
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
+router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 @router.get("/users")
-def get_users():
-    return users
-
+def get_users(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if current_user["role"] not in [Role.admin, Role.superadmin]:
+        raise HTTPException(status_code=403, detail="Only admin or superadmin can view users")
+    return db.query(User).all()
 
 @router.post("/register")
-def register_user(user: UserCreate, current_user: dict = Depends(get_current_user)):
+def register_user(user: UserCreate, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     if user.role == Role.admin and current_user["role"] != Role.superadmin:
         raise HTTPException(status_code=403, detail="Only superadmin can create admin")
 
-    if any(u["login"] == user.login for u in users):
+    if db.query(User).filter(User.login == user.login).first():
         raise HTTPException(status_code=400, detail="Login already exists")
-    if any(u["email"] == user.email for u in users):
+    if db.query(User).filter(User.email == user.email).first():
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    new_user = {
-        "id": max(u["id"] for u in users) + 1,
-        "login": user.login,
-        "password": user.password,  # В реальном проекте нужно хешировать пароль
-        "email": user.email,
-        "role": user.role
-    }
-    users.append(new_user)
+    # Временное хеширование отключено, используем пароль как есть
+    db_user = User(
+        login=user.login,
+        password_hash=user.password,  # Сохраняем пароль как есть
+        email=user.email,
+        role=user.role,
+        created_at=str(datetime.utcnow()),
+        updated_at=str(datetime.utcnow())
+    )
+    db.add(db_user)
+    db.commit()
+    db.refresh(db_user)
     access_token = create_access_token(
-        data={"sub": str(new_user["id"]), "login": new_user["login"], "role": new_user["role"].value})
+        data={"sub": str(db_user.id), "login": db_user.login, "role": db_user.role.value})
     return {"access_token": access_token, "token_type": "bearer"}
 
-
 @router.post("/login")
-def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = next((u for u in users if u["login"] == form_data.username), None)
-    if not user or user["password"] != form_data.password:
+def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user = db.query(User).filter(User.login == form_data.username).first()
+    if not user or user.password_hash != form_data.password:  # Прямое сравнение
         raise HTTPException(status_code=401, detail="Incorrect login or password")
 
     access_token = create_access_token(
-        data={"sub": str(user["id"]), "login": user["login"], "role": user["role"].value})
+        data={"sub": str(user.id), "login": user.login, "role": user.role.value})
     return {"access_token": access_token, "token_type": "bearer"}
-
 
 @router.get("/me", response_model=UserOut)
 def get_me(current_user: dict = Depends(get_current_user)):
     return current_user
 
-
 @router.delete("/delete/{id}")
-def delete_user(id: int, current_user: dict = Depends(get_current_user)):
-    user = next((u for u in users if u["id"] == id), None)
+def delete_user(id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    user = db.query(User).filter(User.id == id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
-    if user["role"] == Role.superadmin:
+    if user.role == Role.superadmin:
         raise HTTPException(status_code=403, detail="Cannot delete superadmin")
-    if user["role"] == Role.admin and current_user["role"] != Role.superadmin:
+    if user.role == Role.admin and current_user["role"] != Role.superadmin:
         raise HTTPException(status_code=403, detail="Only superadmin can delete admin")
-    if current_user["role"] != Role.admin and current_user["role"] != Role.superadmin:
-        raise HTTPException(status_code=403, detail="Only admin can delete worker")
+    if current_user["role"] not in [Role.admin, Role.superadmin]:
+        raise HTTPException(status_code=403, detail="Only admin or superadmin can delete worker")
 
-    users.remove(user)
+    db.delete(user)
+    db.commit()
     return {"message": "User deleted successfully"}
 
-
 @router.get("/", response_model=list[UserOut])
-def get_users(role: Role | None = None, current_user: dict = Depends(get_current_user)):
+def get_users(role: Role | None = None, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     if current_user["role"] not in [Role.admin, Role.superadmin]:
         raise HTTPException(status_code=403, detail="Only admin or superadmin can view users")
 
-    filtered_users = users
+    query = db.query(User)
     if role:
-        filtered_users = [user for user in users if user["role"] == role]
-    return filtered_users
+        query = query.filter(User.role == role)
+    return query.all()

@@ -1,20 +1,13 @@
-from sqlalchemy import Column, Integer, String, Enum, DateTime
-from sqlalchemy.sql import func
+from sqlalchemy import Column, Integer, String, Enum
 from backend.database import Base
-import enum
-
-class UserRole(enum.Enum):
-    worker = "worker"
-    admin = "admin"
-    superadmin = "superadmin"
+from backend.mocks.data import Role
 
 class User(Base):
     __tablename__ = "users"
-
-    id = Column(Integer, primary_key=True)
-    login = Column(String(20), unique=True, nullable=False)
-    password_hash = Column(String(64), nullable=False)
-    email = Column(String(64), unique=True, nullable=False)
-    role = Column(Enum(UserRole), nullable=False)
-    created_at = Column(DateTime, server_default=func.current_timestamp())
-    updated_at = Column(DateTime, server_default=func.current_timestamp())
+    id = Column(Integer, primary_key=True, index=True)
+    login = Column(String(50), unique=True, index=True, nullable=False)
+    password_hash = Column(String(255), nullable=False)
+    email = Column(String(255), unique=True, index=True, nullable=False)
+    role = Column(Enum(Role), nullable=False)
+    created_at = Column(String)  # Используем String для совместимости
+    updated_at = Column(String)  # Используем String для совместимости

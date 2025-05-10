@@ -35,7 +35,7 @@ users = [
     {
         "id": 1,
         "login": "superadmin",
-        "password_hash": "hash_superadmin",  # Заменили password на password_hash
+        "password_hash": "superadmin",  # Временная замена
         "email": "superadmin@example.com",
         "role": Role.superadmin,
         "created_at": datetime(2023, 1, 1, 12, 0),
@@ -44,7 +44,7 @@ users = [
     {
         "id": 2,
         "login": "admin1",
-        "password_hash": "hash_admin",
+        "password_hash": "admin",  # Временная замена
         "email": "admin1@example.com",
         "role": Role.admin,
         "created_at": datetime(2023, 1, 1, 12, 0),
@@ -53,7 +53,7 @@ users = [
     {
         "id": 3,
         "login": "worker1",
-        "password_hash": "hash_worker",
+        "password_hash": "worker",  # Временная замена
         "email": "worker1@example.com",
         "role": Role.worker,
         "created_at": datetime(2023, 1, 1, 12, 0),
