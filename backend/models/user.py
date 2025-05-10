@@ -4,10 +4,11 @@ from backend.mocks.data import Role
 
 class User(Base):
     __tablename__ = "users"
+    __table_args__ = {'extend_existing': True}
     id = Column(Integer, primary_key=True, index=True)
     login = Column(String(50), unique=True, index=True, nullable=False)
     password_hash = Column(String(255), nullable=False)
     email = Column(String(255), unique=True, index=True, nullable=False)
     role = Column(Enum(Role), nullable=False)
-    created_at = Column(String)  # Используем String для совместимости
-    updated_at = Column(String)  # Используем String для совместимости
+    created_at = Column(String)
+    updated_at = Column(String)

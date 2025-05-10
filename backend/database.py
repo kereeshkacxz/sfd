@@ -1,4 +1,4 @@
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, inspect
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from dotenv import load_dotenv
@@ -21,3 +21,10 @@ def get_db():
         yield db
     finally:
         db.close()
+
+def check_and_create_tables():
+    from backend.models import User, Task, Notification, Machine, Trigger, Statistic, DataGenerator
+    inspector = inspect(engine)
+    existing_tables = inspector.get_table_names()
+    if "users" not in existing_tables:
+        Base.metadata.create_all(bind=engine)

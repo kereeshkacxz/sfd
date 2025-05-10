@@ -11,7 +11,7 @@ class StatisticType(enum.Enum):
 
 class Statistic(Base):
     __tablename__ = "statistic"
-
+    __table_args__ = {'extend_existing': True}
     id = Column(Integer, primary_key=True)
     type = Column(Enum(StatisticType), nullable=False)
     data = Column(JSON)

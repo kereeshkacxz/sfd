@@ -10,7 +10,7 @@ class NotificationType(enum.Enum):
 
 class Notification(Base):
     __tablename__ = "notification"
-
+    __table_args__ = {'extend_existing': True}
     id = Column(Integer, primary_key=True)
     message = Column(Text, nullable=False)
     type = Column(Enum(NotificationType), nullable=False)

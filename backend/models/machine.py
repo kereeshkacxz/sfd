@@ -1,6 +1,6 @@
 from sqlalchemy import Column, Integer, String, Enum, DateTime, ForeignKey
 from sqlalchemy.sql import func
-from ..database import Base
+from backend.database import Base
 import enum
 
 class MachineStatus(enum.Enum):
@@ -11,7 +11,7 @@ class MachineStatus(enum.Enum):
 
 class Machine(Base):
     __tablename__ = "machine"
-
+    __table_args__ = {'extend_existing': True}
     id = Column(Integer, primary_key=True)
     name = Column(String(255), nullable=False)
     status = Column(Enum(MachineStatus), nullable=False)

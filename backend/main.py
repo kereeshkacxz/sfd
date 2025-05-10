@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.database import engine, Base
+from backend.database import engine, Base, check_and_create_tables
 from backend.routes import auth, tasks, notifications, statistics, machines, triggers, data_source, admins, workers
 from backend.utils.generator import start_generator
 

@@ -1,41 +1,29 @@
+
 services:
-  sfd-app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: sfd_container
+  app:
+    build: .
     ports:
-      - "8000:8000"  # Порт для бэкенда
-      - "3000:3000"  # Порт для фронтенда
-    restart: unless-stopped
+      - "8000:8000"
     volumes:
-      - ./:/app  # Монтируем весь проект для синхронизации
-      - git-update-logs:/app/git-update.log
+      - .:/app
+    environment:
+      - DATABASE_URL=postgresql://admuser:0000@192.168.31.207:5432/postgres
+      - SECRET_KEY=secret-key
     depends_on:
       - db
-    environment:
-      - DATABASE_URL=postgresql://admuser:0000@localhost:5432/postgres
-    # Добавляем команду для отладки (если simple-start.sh не работает)
-    command: ["/bin/sh", "-c", "ls -l /app && ./simple-start.sh"]
+    command: ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
   db:
     image: postgres:14
-    container_name: sfd_db
+    restart: always
     environment:
       - POSTGRES_USER=admuser
       - POSTGRES_PASSWORD=0000
       - POSTGRES_DB=postgres
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U user -d smart_factory_db"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  git-update-logs:
   postgres_data:
