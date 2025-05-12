@@ -3,12 +3,13 @@ services:
     build: .
     ports:
       - "8000:8000"
+      - "3000:3000"
     volumes:
       - .:/app
     environment:
       - DATABASE_URL=postgresql://postgres.rxstuntghyogpxyufyqr:Yacool7930=@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
       - SECRET_KEY=secret-key
-    command: ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
+    command: ["./simple-start.sh"]
 
 volumes:
   postgres_data:  # Можно удалить, если не используется локальная база
