@@ -123,10 +123,9 @@ statistics = {
 }
 
 data_source_settings = {
-    "frequency": 60,
-    "object_types": ["worker", "task", "machine"],
-    "max_objects": 100,
-    "data_range": {"min_value": 0, "max_value": 100}
+    "frequency": 120,
+    "object_types": ["task"],
+    "max_objects": 100
 }
 
 data_source_objects = [

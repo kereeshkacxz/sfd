@@ -52,8 +52,12 @@ def create_worker(
     return db_worker
 
 
+
 @router.get("/{worker_id}")
-def get_worker(worker_id: int, db: Session = Depends(get_db)):
+def get_worker(worker_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if current_user["role"].value not in [Role.admin.value, Role.superadmin.value]:
+        raise HTTPException(status_code=403, detail="Only admin or superadmin can view workers")
+
     worker = db.query(User).filter(User.id == worker_id, User.role == Role.worker).first()
     if not worker:
         raise HTTPException(status_code=404, detail="Worker not found")
@@ -66,8 +70,12 @@ def update_worker(
         login: str | None = None,
         password: str | None = None,
         email: str | None = None,
-        db: Session = Depends(get_db)
+        db: Session = Depends(get_db),
+        current_user: dict = Depends(get_current_user)
 ):
+    if current_user["role"].value not in [Role.admin.value, Role.superadmin.value]:
+        raise HTTPException(status_code=403, detail="Only admin or superadmin can update workers")
+
     worker = db.query(User).filter(User.id == worker_id, User.role == Role.worker).first()
     if not worker:
         raise HTTPException(status_code=404, detail="Worker not found")
@@ -80,7 +88,7 @@ def update_worker(
     if login:
         worker.login = login
     if password:
-        worker.password_hash = password  # Временное решение, нужно хеширование
+        worker.password_hash = password
     if email:
         worker.email = email
     worker.updated_at = datetime.utcnow()
@@ -92,8 +100,7 @@ def update_worker(
 
 @router.delete("/{worker_id}")
 def delete_worker(worker_id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    # Проверяем права доступа
-    if current_user["role"] not in [Role.admin, Role.superadmin]:
+    if current_user["role"].value not in [Role.admin.value, Role.superadmin.value]:
         raise HTTPException(status_code=403, detail="Only admin or superadmin can delete workers")
 
     worker = db.query(User).filter(User.id == worker_id, User.role == Role.worker).first()

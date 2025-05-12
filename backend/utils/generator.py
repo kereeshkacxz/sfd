@@ -3,12 +3,12 @@ from sqlalchemy.orm import Session
 from backend.database import get_db, SessionLocal
 from backend.models.task import Task, TaskStatus
 from backend.models.notification import Notification, NotificationType
-from backend.models.machine import Machine, MachineStatus
 from backend.models.user import User
 from backend.models.data_source import DataGenerator
 from backend.mocks.data import Role, data_source_settings
-from datetime import datetime
-from models import Trigger
+from datetime import datetime, timedelta
+from backend.models import Trigger
+import random
 
 scheduler = AsyncIOScheduler()
 
@@ -17,83 +17,64 @@ def generate_data():
     try:
         # Получаем настройки
         frequency = data_source_settings["frequency"]
-        object_types = data_source_settings["object_types"]
         max_objects = data_source_settings["max_objects"]
 
-        # Проверяем, не превышает ли количество объектов максимум
-        if db.query(DataGenerator).count() >= max_objects:
+        # Проверяем, не превышает ли количество задач максимум
+        if db.query(Task).count() >= max_objects:
             return
 
-        # Генерируем данные для каждого типа объекта
-        for obj_type in object_types:
-            if obj_type == "task":
-                new_task = Task(
-                    title=f"Generated Task {db.query(Task).count() + 1}",
-                    description="Automatically generated task",
-                    status=TaskStatus.planned,
-                    deadline=datetime(2025, 12, 31),
-                    assigned_to=3,  # worker1
-                    created_by=1    # superadmin или другой пользователь
-                )
-                db.add(new_task)
-                db.commit()
-                db.refresh(new_task)
+        # Генерируем новую задачу для случайного сотрудника
+        workers = db.query(User).filter(User.role == Role.worker).all()
+        if not workers:
+            return
 
-                db_data_source = DataGenerator(
-                    name=f"Task_{new_task.id}",
-                    parameters={"type": obj_type, "data": {"id": new_task.id}},
-                    created_by=1
-                )
-                db.add(db_data_source)
-                db.commit()
+        worker = random.choice(workers)
+        new_task = Task(
+            title=f"Сгенерированное задание {db.query(Task).count() + 1}",
+            description="Автоматически сгенерированное задание",
+            status=TaskStatus.planned,
+            deadline=datetime.utcnow() + timedelta(days=7),  # Срок через 7 дней
+            assigned_to=worker.id,
+            created_by=3  # superadmin или другой пользователь
+        )
+        db.add(new_task)
+        db.commit()
+        db.refresh(new_task)
 
-            elif obj_type == "worker":
-                new_worker = User(
-                    login=f"worker{db.query(User).count() + 1}",
-                    password_hash=f"generated_pass{db.query(User).count() + 1}",
-                    email=f"worker{db.query(User).count() + 1}@example.com",
-                    role=Role.worker
-                )
-                db.add(new_worker)
-                db.commit()
-                db.refresh(new_worker)
+        # Создаём соответствующую запись DataGenerator
+        db_data_source = DataGenerator(
+            name=f"Task_{new_task.id}",
+            parameters={"type": "task", "data": {"id": new_task.id}},
+            created_by=1
+        )
+        db.add(db_data_source)
+        db.commit()
 
-                db_data_source = DataGenerator(
-                    name=f"Worker_{new_worker.id}",
-                    parameters={"type": obj_type, "data": {"id": new_worker.id}},
-                    created_by=1
-                )
-                db.add(db_data_source)
-                db.commit()
+        # Изменяем статусы существующих задач
+        tasks = db.query(Task).all()
+        for task in tasks:
+            if task.status == TaskStatus.planned and datetime.utcnow() > task.deadline:
+                task.status = TaskStatus.overdue
+            elif task.status == TaskStatus.planned:
+                task.status = random.choice([TaskStatus.in_progress, TaskStatus.planned])
+            elif task.status == TaskStatus.in_progress:
+                task.status = random.choice([TaskStatus.completed, TaskStatus.in_progress])
+            db.commit()
 
-            elif obj_type == "machine":
-                new_machine = Machine(
-                    name=f"Machine {db.query(Machine).count() + 1}",
-                    status=MachineStatus.working
-                )
-                db.add(new_machine)
-                db.commit()
-                db.refresh(new_machine)
-
-                db_data_source = DataGenerator(
-                    name=f"Machine_{new_machine.id}",
-                    parameters={"type": obj_type, "data": {"id": new_machine.id}},
-                    created_by=1
-                )
-                db.add(db_data_source)
-                db.commit()
-
-        # Проверяем триггеры и создаём уведомления
-        triggers = db.query(Trigger).all()  # Используем модель Trigger
+        # Имитация срабатывания триггеров и создание уведомлений
+        triggers = db.query(Trigger).all()
         for trigger in triggers:
-            # Проверяем триггер на основе условия (пример для машины)
-            if "machine" in trigger.name.lower() or "machine" in trigger.action.lower():  # Временная замена type
-                for machine in db.query(Machine).all():
-                    if machine.status == MachineStatus.idle and str(trigger.condition).find("idle") > -1:  # Простая проверка условия
+            # Проверяем триггер на основе условия (для задач)
+            if "task" in trigger.name.lower() or "task" in trigger.action.lower():
+                tasks = db.query(Task).all()
+                for task in tasks:
+                    if task.status == TaskStatus.overdue and str(trigger.condition).find("overdue") > -1:
+                        print(f"Trigger {trigger.name} activated for overdue task {task.id}")
+                        # Создаём уведомление после срабатывания триггера
                         new_notification = Notification(
-                            message=f"Machine {machine.name} idle for too long",
-                            type=NotificationType.machine,
-                            recipient_id=3  # worker1
+                            message=f"Задача {task.title} (ID: {task.id}) просрочена",
+                            type=NotificationType.warning,  # Тип уведомления
+                            recipient_id=task.assigned_to  # Уведомление отправляется исполнителю задачи
                         )
                         db.add(new_notification)
                         db.commit()

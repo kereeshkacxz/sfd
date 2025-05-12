@@ -10,15 +10,17 @@ from backend.utils.auth import create_access_token, get_current_user
 from backend.mocks.data import Role
 from datetime import datetime
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-
+# Удаляем sys.path, так как импорты теперь абсолютные
 router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 @router.get("/users")
 def get_users(db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
     if current_user["role"] not in [Role.admin, Role.superadmin]:
         raise HTTPException(status_code=403, detail="Only admin or superadmin can view users")
-    return db.query(User).all()
+    users = db.query(User).all()
+    if not users:
+        raise HTTPException(status_code=404, detail="No users found")
+    return users
 
 @router.post("/register")
 def register_user(user: UserCreate, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
@@ -30,14 +32,13 @@ def register_user(user: UserCreate, db: Session = Depends(get_db), current_user:
     if db.query(User).filter(User.email == user.email).first():
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    # Временное хеширование отключено, используем пароль как есть
     db_user = User(
         login=user.login,
-        password_hash=user.password,  # Сохраняем пароль как есть
+        password_hash=user.password,  # Сохраняем пароль как есть (добавьте хеширование)
         email=user.email,
         role=user.role,
-        created_at=str(datetime.utcnow()),
-        updated_at=str(datetime.utcnow())
+        created_at=datetime.utcnow(),
+        updated_at=datetime.utcnow()
     )
     db.add(db_user)
     db.commit()
@@ -60,22 +61,38 @@ def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depend
 def get_me(current_user: dict = Depends(get_current_user)):
     return current_user
 
-@router.delete("/delete/{id}")
-def delete_user(id: int, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
-    user = db.query(User).filter(User.id == id).first()
+@router.delete("/delete/{login}")
+def delete_user(login: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    user = db.query(User).filter(User.login == login).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
 
     if user.role == Role.superadmin:
         raise HTTPException(status_code=403, detail="Cannot delete superadmin")
-    if user.role == Role.admin and current_user["role"] != Role.superadmin:
+    if user.role == Role.admin and current_user["role"].value != Role.superadmin.value:
         raise HTTPException(status_code=403, detail="Only superadmin can delete admin")
-    if current_user["role"] not in [Role.admin, Role.superadmin]:
+    if current_user["role"].value not in [Role.admin.value, Role.superadmin.value]:
         raise HTTPException(status_code=403, detail="Only admin or superadmin can delete worker")
 
-    db.delete(user)
+    # Мягкое удаление: помечаем пользователя как неактивного
+    user.is_active = False
+    user.updated_at = datetime.utcnow()
     db.commit()
-    return {"message": "User deleted successfully"}
+    return {"message": "User deactivated successfully"}
+
+@router.post("/restore/{login}")
+def restore_user(login: str, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    if current_user["role"].value != Role.superadmin.value:
+        raise HTTPException(status_code=403, detail="Only superadmin can restore users")
+
+    user = db.query(User).filter(User.login == login).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+
+    user.is_active = True
+    user.updated_at = datetime.utcnow()
+    db.commit()
+    return {"message": "User restored successfully"}
 
 @router.get("/", response_model=list[UserOut])
 def get_users(role: Role | None = None, db: Session = Depends(get_db), current_user: dict = Depends(get_current_user)):
@@ -85,4 +102,7 @@ def get_users(role: Role | None = None, db: Session = Depends(get_db), current_u
     query = db.query(User)
     if role:
         query = query.filter(User.role == role)
-    return query.all()
+    users = query.all()
+    if not users:
+        raise HTTPException(status_code=404, detail="No users found")
+    return users

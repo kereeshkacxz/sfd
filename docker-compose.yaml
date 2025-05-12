@@ -1,4 +1,3 @@
-
 services:
   app:
     build: .
@@ -7,23 +6,9 @@ services:
     volumes:
       - .:/app
     environment:
-      - DATABASE_URL=postgresql://admuser:0000@192.168.31.207:5432/postgres
+      - DATABASE_URL=postgresql://postgres.rxstuntghyogpxyufyqr:Yacool7930=@aws-0-eu-central-1.pooler.supabase.com:5432/postgres
       - SECRET_KEY=secret-key
-    depends_on:
-      - db
     command: ["uvicorn", "backend.main:app", "--host", "0.0.0.0", "--port", "8000", "--reload"]
 
-  db:
-    image: postgres:14
-    restart: always
-    environment:
-      - POSTGRES_USER=admuser
-      - POSTGRES_PASSWORD=0000
-      - POSTGRES_DB=postgres
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-
 volumes:
-  postgres_data:
+  postgres_data:  # Можно удалить, если не используется локальная база

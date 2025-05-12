@@ -1,14 +1,17 @@
-from database import engine
-from sqlalchemy.sql import text
+import psycopg2
 
-try:
-    with engine.connect() as connection:
-        print("Подключение к базе данных успешно!")
-        # Используем text() для выполнения SQL-запроса
-        result = connection.execute(text("SELECT * FROM users LIMIT 1"))
-        for row in result:
-            print(row)
-except Exception as e:
-    print(f"Ошибка подключения: {e}")
+conn = psycopg2.connect(
+    dbname="postgres",
+    user="postgres.rxstuntghyogpxyufyqr",
+    password="Yacool7930=",
+    host="aws-0-eu-central-1.pooler.supabase.com",
+    port="5432",
+    sslmode="require"
+)
+cursor = conn.cursor()
+cursor.execute("SELECT * FROM users;")  # Замени your_table на имя своей таблицы
+print(cursor.fetchone())
+conn.close()
+
 
 # cmd: python test_db.py
