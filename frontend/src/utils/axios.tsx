@@ -1,13 +1,19 @@
 import axios from 'axios';
 
+// Присвоим базовый URL из env, либо дефолт если не определен
+const API_BASE_URL =
+    process.env.NEXT_PUBLIC_API_BASE_URL ||
+    'http://0.0.0.0:8000/api'; // Default fallback
+
 export async function apiRequest<T = any>(
     urlForRequest: string,
     method: 'get' | 'post' | 'put' | 'delete' = 'get',
     data?: any,
     token?: string,
-    asForm = false, // <--- добавить этот флаг!
+    asForm = false,
 ): Promise<T> {
-    const url = `http://0.0.0.0:8000/api/${urlForRequest}`;
+    // Формируем URL
+    const url = `${API_BASE_URL.replace(/\/$/, '')}/${urlForRequest.replace(/^\//, '')}`;
     try {
         let requestData = data;
         const headers: any = {
