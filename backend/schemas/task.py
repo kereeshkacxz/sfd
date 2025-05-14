@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from datetime import datetime
 from backend.mocks.data import TaskStatus
+from typing import List
 
 class TaskCreate(BaseModel):
     title: str
@@ -23,3 +24,6 @@ class TaskOut(BaseModel):
     status: TaskStatus
     deadline: datetime
     assigned_to: int
+
+class TaskDeleteRequest(BaseModel):
+    ids: List[int]

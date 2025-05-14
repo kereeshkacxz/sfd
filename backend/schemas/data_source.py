@@ -27,3 +27,6 @@ class DataSourceObjectOut(BaseModel):
     id: int
     type: ObjectType
     data: Dict[str, str]
+    
+class DataSourceDeleteRequest(BaseModel):
+    data_source_ids: List[int]

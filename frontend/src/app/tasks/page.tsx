@@ -3,48 +3,44 @@ import List from '@/components/List/List';
 import {Button, Checkbox, Flex, Text, useToaster} from '@gravity-ui/uikit';
 import {useEffect, useState} from 'react';
 import styles from './tasks.module.scss';
+import {apiRequest} from '@/utils';
 
 export default function Home() {
     const {add} = useToaster();
 
-    const [items, setItems] = useState([
-        {
-            id: 1,
-            title: 'One',
-            subtitle:
-                'First item in the list First item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the listFirst item in the list',
-        },
-        {id: 2, title: 'Two', subtitle: 'Second item with description'},
-        {id: 3, title: 'Three', subtitle: 'Third element with details'},
-        {id: 4, title: 'Four', subtitle: 'Fourth position in sequence'},
-        {id: 5, title: 'Five', subtitle: 'Middle of the list'},
-        {id: 6, title: 'Five', subtitle: 'Middle of the list'},
-        {id: 7, title: 'Five', subtitle: 'Middle of the list'},
-        {id: 8, title: 'Five', subtitle: 'Middle of the list'},
-        {id: 9, title: 'Five', subtitle: 'Middle of the list'},
-        {id: 10, title: 'Five', subtitle: 'Middle of the list'},
-        {id: 11, title: 'Five', subtitle: 'Middle of the list'},
-        {id: 12, title: 'Five', subtitle: 'Middle of the list'},
-        {id: 13, title: 'Five', subtitle: 'Middle of the list'},
-    ]);
+    const [items, setItems] = useState<
+        {id: number; title: string; subtitle: string}[]
+    >([]);
     const [selectedItems, setSelectedItems] = useState<number[]>([]);
     const [isAllSelected, setIsAllSelected] = useState(false);
 
     useEffect(() => {
-        if (items.length > 0 && selectedItems.length === items.length) {
-            setIsAllSelected(true);
-        } else {
-            setIsAllSelected(false);
-        }
+        const fetchTasks = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                const tasks = await apiRequest('/tasks', 'get', undefined, token);
+                const mapped = tasks.map((t: any) => ({
+                    id: t.id,
+                    title: t.title,
+                    subtitle: t.description,
+                }));
+                setItems(mapped);
+            } catch (error) {
+                console.error('Ошибка при загрузке задач', error);
+            }
+        };
+
+        fetchTasks();
+    }, []);
+
+    useEffect(() => {
+        setIsAllSelected(items.length > 0 && selectedItems.length === items.length);
     }, [selectedItems, items]);
 
     const toggleIsAllSelected = () => {
-        if (isAllSelected) {
-            setSelectedItems([]);
-        } else {
-            const allIds = items.map((item) => item.id);
-            setSelectedItems(allIds);
-        }
+        setSelectedItems(isAllSelected ? [] : items.map((item) => item.id));
     };
 
     const handleItemSelect = (itemId: number) => {
@@ -58,15 +54,36 @@ export default function Home() {
             setSelectedItems([]);
         };
 
-        const handleCloseTasks = () => {
-            setItems((prev) => prev.filter((item) => !selectedItems.includes(item.id)));
-            add({
-                title: `Задач${selectedItems.length < 2 ? 'a' : 'и'} успешно закрыт${selectedItems.length < 2 ? 'a' : 'ы'}!`,
-                name: 'task_successful_ended',
-                theme: 'success',
-                autoHiding: 2000,
-            });
-            setSelectedItems([]);
+        const handleCloseTasks = async () => {
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) return;
+
+                await apiRequest(
+                    '/tasks',
+                    'delete',
+                    {ids: selectedItems},
+                    token,
+                );
+
+                setItems((prev) => prev.filter((item) => !selectedItems.includes(item.id)));
+
+                add({
+                    title: `Задач${selectedItems.length < 2 ? 'a' : 'и'} успешно удален${selectedItems.length < 2 ? 'a' : 'ы'}!`,
+                    name: 'task_successful_deleted',
+                    theme: 'success',
+                    autoHiding: 2000,
+                });
+
+                setSelectedItems([]);
+            } catch (error) {
+                console.error('Ошибка при удалении задач:', error);
+                add({
+                    title: 'Ошибка при удалении задач',
+                    name: 'task_delete_error',
+                    theme: 'danger',
+                });
+            }
         };
 
         return (
@@ -81,7 +98,7 @@ export default function Home() {
                     className={styles.button}
                     disabled={selectedItems.length === 0}
                 >
-                    Закрыть выбранные задачи
+                    Удалить выбранные задачи
                 </Button>
             </>
         );

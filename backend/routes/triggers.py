@@ -1,9 +1,12 @@
+from backend.schemas.trigger import TriggerDeleteRequest
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.trigger import Trigger
 from backend.utils.auth import get_current_user
 from datetime import datetime
+from backend.mocks.data import Role
+from typing import List
 
 router = APIRouter(prefix="/api/triggers", tags=["Triggers"])
 
@@ -67,11 +70,31 @@ def update_trigger(
     return trigger
 
 
-@router.delete("/{trigger_id}")
-def delete_trigger(trigger_id: int, db: Session = Depends(get_db)):
-    trigger = db.query(Trigger).filter(Trigger.id == trigger_id).first()
-    if not trigger:
-        raise HTTPException(status_code=404, detail="Trigger not found")
-    db.delete(trigger)
+@router.delete("/")
+def delete_triggers(
+    request: TriggerDeleteRequest,  # Используем Pydantic модель
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    if current_user["role"] not in [Role.admin, Role.superadmin]:
+        raise HTTPException(status_code=403, detail="Only admin can delete triggers")
+    
+    # Логируем полученные данные
+    print(f"Получены ID для удаления: {request.trigger_ids}")
+    
+    # Проверяем существование триггеров
+    existing = db.query(Trigger.id).filter(Trigger.id.in_(request.trigger_ids)).all()
+    existing_ids = {t.id for t in existing}
+    
+    if len(existing_ids) != len(request.trigger_ids):
+        missing = set(request.trigger_ids) - existing_ids
+        raise HTTPException(
+            status_code=404,
+            detail=f"Triggers not found: {missing}"
+        )
+    
+    # Удаление
+    db.query(Trigger).filter(Trigger.id.in_(request.trigger_ids)).delete(synchronize_session=False)
     db.commit()
-    return {"message": "Trigger deleted successfully"}
+    
+    return {"message": f"Deleted {len(request.trigger_ids)} triggers"}

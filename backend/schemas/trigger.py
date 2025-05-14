@@ -1,5 +1,7 @@
 from pydantic import BaseModel
 from enum import Enum  # Импортируем Enum
+from typing import List
+
 
 # Исправляем TriggerType на перечисление
 class TriggerType(str, Enum):  # Наследуем от Enum и str для совместимости с Pydantic
@@ -25,3 +27,6 @@ class TriggerOut(BaseModel):
     message: str
     type: TriggerType  # И здесь всё корректно
     target_id: int
+
+class TriggerDeleteRequest(BaseModel):
+    trigger_ids: List[int]

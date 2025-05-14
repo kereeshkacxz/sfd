@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.task import Task, TaskStatus
 from backend.utils.auth import get_current_user
+from backend.schemas.task import TaskDeleteRequest
 from datetime import datetime
 
 router = APIRouter(prefix="/api/tasks", tags=["Tasks"])
@@ -80,11 +81,15 @@ def update_task(
     return task
 
 
-@router.delete("/{task_id}")
-def delete_task(task_id: int, db: Session = Depends(get_db)):
-    task = db.query(Task).filter(Task.id == task_id).first()
-    if not task:
-        raise HTTPException(status_code=404, detail="Task not found")
-    db.delete(task)
+@router.delete("/", response_model=dict)
+def delete_tasks(
+    payload: TaskDeleteRequest,
+    db: Session = Depends(get_db),
+):
+    tasks = db.query(Task).filter(Task.id.in_(payload.ids)).all()
+    if not tasks:
+        raise HTTPException(status_code=404, detail="Tasks not found")
+    for task in tasks:
+        db.delete(task)
     db.commit()
-    return {"message": "Task deleted successfully"}
+    return {"message": f"{len(tasks)} task(s) deleted successfully"}

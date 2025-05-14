@@ -1,11 +1,13 @@
 'use client';
-import {useState} from 'react';
+import {useState, useEffect} from 'react';
 import List from '@/components/List/List';
 import {Button, Flex, Icon, Modal, Text} from '@gravity-ui/uikit';
 import {PersonWorker} from '@gravity-ui/icons';
 import styles from './accounts.module.scss';
 import {isAdminWithRedirect} from '@/components';
 import DynamicForm, {Field} from '@/components/Form/Form';
+import {apiRequest} from '@/utils';
+import {useRouter} from 'next/navigation';
 
 const formatAccountItem = (login: string) => (
     <div className={styles.accountItem}>
@@ -16,26 +18,49 @@ const formatAccountItem = (login: string) => (
 
 export default function AccountsPage() {
     isAdminWithRedirect();
-
-    const accounts = [
-        {id: 1, login: 'worker1'},
-        {id: 2, login: 'worker2'},
-        {id: 3, login: 'worker3'},
-        {id: 4, login: 'manager1'},
-    ];
-
-    const items = accounts.map((account) => ({
-        id: account.id,
-        title: formatAccountItem(account.login),
-    }));
-
+    const router = useRouter();
+    const [accounts, setAccounts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [isFormVisible, setFormVisible] = useState(false);
 
     const formFields: Field[] = [
-        {name: 'login', label: 'Логин', type: 'text'},
-        {name: 'password', label: 'Пароль', type: 'password'},
-        {name: 'email', label: 'Email', type: 'email'},
+        {name: 'login', label: 'Логин', type: 'text', required: true},
+        {name: 'password', label: 'Пароль', type: 'password', required: true},
+        {name: 'email', label: 'Email', type: 'email', required: true},
     ];
+
+    const getToken = () => {
+        if (typeof window !== 'undefined') {
+            return localStorage.getItem('token');
+        }
+        return null;
+    };
+
+    const fetchAccounts = async () => {
+        try {
+            setLoading(true);
+            const token = getToken();
+            if (!token) {
+                router.push('/login');
+                return;
+            }
+            const data = await apiRequest('workers/', 'get', undefined, token);
+            setAccounts(data);
+            setError(null);
+        } catch (err: any) {
+            setError(err.message || 'Ошибка при загрузке аккаунтов');
+            if (err.status === 401) {
+                router.push('/login');
+            }
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchAccounts();
+    }, []);
 
     const handleAddWorker = () => {
         setFormVisible(true);
@@ -44,6 +69,35 @@ export default function AccountsPage() {
     const handleCloseModal = () => {
         setFormVisible(false);
     };
+
+    const handleCreateWorker = async (formData: any) => {
+        try {
+            console.log('Отправляемые данные:', formData);
+            const token = getToken();
+            if (!token) {
+                router.push('/login');
+                return;
+            }
+            await apiRequest('workers/', 'post', formData, token);
+            await fetchAccounts();
+            setFormVisible(false);
+        } catch (err: any) {
+            alert(err.message || 'Ошибка при создании аккаунта');
+        }
+    };
+
+    const items = accounts.map((account) => ({
+        id: account.id,
+        title: formatAccountItem(account.login),
+    }));
+
+    if (loading) {
+        return <div>Загрузка...</div>;
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
 
     return (
         <>
@@ -67,7 +121,13 @@ export default function AccountsPage() {
                     <Flex justifyContent="center" style={{marginBottom: '20px'}}>
                         <Text variant="header-1">Создание работника</Text>
                     </Flex>
-                    <DynamicForm initialData={{}} fields={formFields} />
+                    <DynamicForm 
+                        initialData={{}} 
+                        fields={formFields} 
+                        onSubmit={handleCreateWorker}
+                        submitText="Создать"
+                        showDelete={false}
+                    />
                 </div>
             </Modal>
         </>

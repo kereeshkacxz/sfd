@@ -1,9 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Form, Body 
 from sqlalchemy.orm import Session
 from backend.database import get_db
 from backend.models.user import User  # Предполагаем, что модель User уже есть
+# from backend.schemas import WorkerUpdate
 from backend.mocks.data import Role
 from backend.utils.auth import get_current_user
+from backend.schemas.worker import WorkerUpdate
+from backend.schemas import UserCreate
 from datetime import datetime
 
 router = APIRouter(prefix="/api/workers", tags=["Workers"])
@@ -22,27 +25,22 @@ def get_workers(db: Session = Depends(get_db), current_user: dict = Depends(get_
 
 @router.post("/")
 def create_worker(
-        login: str,
-        password: str,
-        email: str,
+        user_data: UserCreate,
         db: Session = Depends(get_db),
         current_user: dict = Depends(get_current_user)
 ):
-    # Проверяем права доступа (только admin или superadmin могут создавать)
     if current_user["role"] not in [Role.admin, Role.superadmin]:
         raise HTTPException(status_code=403, detail="Only admin or superadmin can create workers")
 
-    # Проверяем уникальность login и email
-    if db.query(User).filter(User.login == login).first():
+    if db.query(User).filter(User.login == user_data.login).first():
         raise HTTPException(status_code=400, detail="Login already exists")
-    if db.query(User).filter(User.email == email).first():
+    if db.query(User).filter(User.email == user_data.email).first():
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    # Временное сохранение пароля как есть (нужно добавить хеширование, если требуется)
     db_worker = User(
-        login=login,
-        password_hash=password,
-        email=email,
+        login=user_data.login,
+        password_hash=user_data.password,  # Пока без хеша, потом добавишь
+        email=user_data.email,
         role=Role.worker,
         updated_at=datetime.utcnow()
     )
@@ -65,13 +63,11 @@ def get_worker(worker_id: int, db: Session = Depends(get_db), current_user: dict
 
 
 @router.put("/{worker_id}")
-def update_worker(
-        worker_id: int,
-        login: str | None = None,
-        password: str | None = None,
-        email: str | None = None,
-        db: Session = Depends(get_db),
-        current_user: dict = Depends(get_current_user)
+async def update_worker(
+    worker_id: int,
+    worker_update: WorkerUpdate = Body(...),
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
 ):
     if current_user["role"].value not in [Role.admin.value, Role.superadmin.value]:
         raise HTTPException(status_code=403, detail="Only admin or superadmin can update workers")
@@ -80,17 +76,18 @@ def update_worker(
     if not worker:
         raise HTTPException(status_code=404, detail="Worker not found")
 
-    if login and db.query(User).filter(User.login == login).first() and login != worker.login:
+    if worker_update.login and db.query(User).filter(User.login == worker_update.login).first() and worker_update.login != worker.login:
         raise HTTPException(status_code=400, detail="Login already exists")
-    if email and db.query(User).filter(User.email == email).first() and email != worker.email:
+    if worker_update.email and db.query(User).filter(User.email == worker_update.email).first() and worker_update.email != worker.email:
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    if login:
-        worker.login = login
-    if password:
-        worker.password_hash = password
-    if email:
-        worker.email = email
+    if worker_update.login:
+        worker.login = worker_update.login
+    if worker_update.password:
+        worker.password_hash = worker_update.password
+    if worker_update.email:
+        worker.email = worker_update.email
+
     worker.updated_at = datetime.utcnow()
 
     db.commit()
