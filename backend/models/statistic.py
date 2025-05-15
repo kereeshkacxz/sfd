@@ -10,9 +10,9 @@ class StatisticType(enum.Enum):
     production = "production"
 
 class Statistic(Base):
-    __tablename__ = "statistic"
-    __table_args__ = {'extend_existing': True}
+    __tablename__ = "statistics"
+
     id = Column(Integer, primary_key=True)
     type = Column(Enum(StatisticType), nullable=False)
-    data = Column(JSON)
-    generated_at = Column(DateTime, server_default=func.current_timestamp())
+    data = Column(JSON, nullable=False)
+    generated_at = Column(DateTime, server_default=func.current_timestamp())  # Добавляем
