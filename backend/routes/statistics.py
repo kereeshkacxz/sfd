@@ -31,15 +31,6 @@ def create_statistic(
     db.refresh(db_statistic)
     return db_statistic
 
-
-@router.get("/{type}")
-def get_statistic(type: StatisticType, db: Session = Depends(get_db)):
-    statistic = db.query(Statistic).filter(Statistic.type == type).first()
-    if not statistic:
-        raise HTTPException(status_code=404, detail="Statistic not found")
-    return statistic
-
-
 @router.put("/{type}")
 def update_statistic(
         type: StatisticType,
