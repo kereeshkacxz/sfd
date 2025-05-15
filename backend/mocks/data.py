@@ -115,11 +115,10 @@ machines = [
     }
 ]
 
-statistics = []  # Обновляем для соответствия формату
-# Пример будет добавлен генератором
+statistics = []
 
 data_source_settings = {
-    "frequency": 10,
+    "frequency": 300,
     "object_types": ["worker", "task", "machine"],  # Обновляем для генерации всех типов
     "max_objects": 1000
 }

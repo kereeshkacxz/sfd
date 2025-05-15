@@ -16,3 +16,5 @@ class Statistic(Base):
     type = Column(Enum(StatisticType), nullable=False)
     data = Column(JSON, nullable=False)
     generated_at = Column(DateTime, server_default=func.current_timestamp())  # Добавляем
+
+
