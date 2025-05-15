@@ -1,3 +1,5 @@
+from backend.mocks.data import Role
+from backend.schemas.data_source import DataSourceDeleteRequest
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from backend.database import get_db
@@ -62,11 +64,29 @@ def update_data_source(
     return data_source
 
 
-@router.delete("/{data_source_id}")
-def delete_data_source(data_source_id: int, db: Session = Depends(get_db)):
-    data_source = db.query(DataGenerator).filter(DataGenerator.id == data_source_id).first()
-    if not data_source:
-        raise HTTPException(status_code=404, detail="Data source not found")
-    db.delete(data_source)
+@router.delete("/")
+def delete_data_sources(
+    request: DataSourceDeleteRequest,
+    db: Session = Depends(get_db),
+    current_user: dict = Depends(get_current_user)
+):
+    """Массовое удаление источников данных"""
+    if current_user["role"] not in [Role.admin, Role.superadmin]:
+        raise HTTPException(status_code=403, detail="Only admin can delete data sources")
+    
+    # Проверяем существование источников
+    existing = db.query(DataGenerator.id).filter(DataGenerator.id.in_(request.data_source_ids)).all()
+    existing_ids = {ds.id for ds in existing}
+    missing_ids = set(request.data_source_ids) - existing_ids
+    
+    if missing_ids:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Data sources not found: {sorted(missing_ids)}"
+        )
+    
+    # Массовое удаление
+    db.query(DataGenerator).filter(DataGenerator.id.in_(request.data_source_ids)).delete(synchronize_session=False)
     db.commit()
-    return {"message": "Data source deleted successfully"}
+    
+    return {"message": f"Deleted {len(request.data_source_ids)} data sources"}

@@ -1,13 +1,17 @@
 #!/bin/bash
+set -e
 
-# Запускаем бэкенд (FastAPI) в фоновом режиме
-cd /app
+# export PYTHONPATH one time
 export PYTHONPATH=/app:$PYTHONPATH
+
+# Запускаем backend
 uvicorn backend.main:app --host 0.0.0.0 --port 8000 &
 
-# Ждём секунду, чтобы бэкенд успел запуститься
-sleep 1
-
-# Запускаем фронтенд (Next.js)
+# Запускаем frontend (Next.js)
 cd /app/frontend
+npm install
+npm run build
 npm start &
+
+# Ждем завершения обоих процессов
+wait
