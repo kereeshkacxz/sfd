@@ -42,3 +42,22 @@ def create_admin(login: str, password: str, email: str, db: Session = Depends(ge
     db.commit()
     db.refresh(db_user)
     return db_user
+
+@router.get("/current")
+def get_current_user_id(
+    current_user: dict = Depends(get_current_user),
+    db: Session = Depends(get_db)
+):
+    """
+    Получение ID текущего авторизованного пользователя
+    """
+    # Проверяем, что пользователь авторизован (get_current_user уже делает эту проверку)
+    user_id = current_user.get("id")
+    
+    if not user_id:
+        raise HTTPException(
+            status_code=404,
+            detail="User ID not found in token"
+        )
+    
+    return {"id": user_id}

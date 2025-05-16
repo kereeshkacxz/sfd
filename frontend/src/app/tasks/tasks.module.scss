@@ -8,42 +8,30 @@
 }
 
 .modalContent {
-    padding: 20px;
-    display: flex;
-    flex-direction: column;
-    gap: 16px;
-    width: 500px;
-    max-width: 100%;
+  padding: 24px;        // внутренние отступы у модального окна
+  min-width: 400px;     // ширина побольше
 }
 
-.formGroup {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.createButton {
+  align-self: flex-end; // кнопка будет справа
+}
+.fab {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  padding: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+  }
 }
 
-.input, .textarea {
-    padding: 8px 12px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-}
 
-.textarea {
-    min-height: 100px;
-    resize: vertical;
-}
-
-.modalActions {
-    margin-top: 20px;
-}
-
-.addButton {
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}

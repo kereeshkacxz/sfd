@@ -5,6 +5,24 @@ from backend.models.task import Task, TaskStatus
 from backend.utils.auth import get_current_user
 from backend.schemas.task import TaskDeleteRequest
 from datetime import datetime
+from pydantic import BaseModel
+from enum import Enum
+from datetime import datetime
+
+class TaskStatus(str, Enum):
+    planned = "planned"
+    in_progress = "in_progress"
+    completed = "completed"
+    overdue = "overdue"
+    evaluation = "evaluation"
+
+class TaskCreate(BaseModel):
+    title: str
+    status: TaskStatus
+    deadline: str  # ISO-строка, либо можно `datetime` и указать формат
+    assigned_to: int
+    created_by: int
+    description: str | None = None
 
 router = APIRouter(prefix="/api/tasks", tags=["Tasks"])
 
@@ -18,22 +36,14 @@ def get_tasks(status: TaskStatus | None = None, db: Session = Depends(get_db)):
 
 
 @router.post("/")
-def create_task(
-        title: str,
-        status: TaskStatus,
-        deadline: str,
-        assigned_to: int,
-        created_by: int,
-        description: str | None = None,  # Необязательный параметр в конце
-        db: Session = Depends(get_db)
-):
+def create_task(task: TaskCreate, db: Session = Depends(get_db)):
     db_task = Task(
-        title=title,
-        description=description,
-        status=status,
-        deadline=deadline,
-        assigned_to=assigned_to,
-        created_by=created_by,
+        title=task.title,
+        description=task.description,
+        status=task.status,
+        deadline=task.deadline,
+        assigned_to=task.assigned_to,
+        created_by=task.created_by,
         updated_at=datetime.utcnow()
     )
     db.add(db_task)
