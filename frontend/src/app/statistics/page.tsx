@@ -13,10 +13,8 @@ import {
     Title,
     Tooltip,
 } from 'chart.js';
-
-import workers from './workers.json';
-import tasks from './tasks.json';
-import machines from './machines.json';
+import {useEffect, useState} from 'react';
+import {apiRequest} from '@/utils'; 
 
 ChartJS.register(
     LineElement,
@@ -30,7 +28,79 @@ ChartJS.register(
     Legend,
 );
 
+interface WorkerData {
+    workerID: string;
+    name: string;
+    status: string;
+}
+
+interface MachineData {
+    machineID: string;
+    status: string;
+    lastMaintenance: string;
+}
+
+interface TaskData {
+    taskName: string;
+    duration: number;
+    assignedTo: string;
+}
+
+interface StatisticResponse {
+    type: 'worker' | 'machine' | 'task';
+    data: {
+        data: WorkerData | MachineData | TaskData;
+    };
+}
+
 export default function Statistics() {
+    const [workers, setWorkers] = useState<WorkerData[]>([]);
+    const [tasks, setTasks] = useState<TaskData[]>([]);
+    const [machines, setMachines] = useState<MachineData[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
+    useEffect(() => {
+        async function fetchData() {
+            try {
+                const data = await apiRequest<StatisticResponse[]>('statistics');
+                
+                const workersData: WorkerData[] = [];
+                const tasksData: TaskData[] = [];
+                const machinesData: MachineData[] = [];
+                
+                data.forEach(item => {
+                    if (item.type === 'worker') {
+                        workersData.push(item.data.data as WorkerData);
+                    } else if (item.type === 'machine') {
+                        machinesData.push(item.data.data as MachineData);
+                    } else if (item.type === 'task') {
+                        tasksData.push(item.data.data as TaskData);
+                    }
+                });
+                
+                setWorkers(workersData);
+                setTasks(tasksData);
+                setMachines(machinesData);
+                setLoading(false);
+            } catch (error: any) {
+                console.error('Error fetching statistics:', error);
+                setError(error.message || 'Failed to load statistics');
+                setLoading(false);
+            }
+        }
+        
+        fetchData();
+    }, []);
+
+    if (loading) {
+        return <div className="loading">Loading...</div>;
+    }
+
+    if (error) {
+        return <div className="error">Error: {error}</div>;
+    }
+
     // === 1. Столбчатая диаграмма: Задачи по сотрудникам
     const taskCounts: Record<string, number> = {};
     tasks.forEach((t) => {
@@ -80,7 +150,7 @@ export default function Statistics() {
             {
                 label: 'Статусы',
                 data: Object.values(machineStatusCount),
-                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56'],
+                backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
             },
         ],
     };
@@ -144,9 +214,18 @@ export default function Statistics() {
                     height: auto !important;
                 }
 
-                h2,
-                h3 {
+                h2, h3 {
                     margin-bottom: 1rem;
+                }
+
+                .loading, .error {
+                    padding: 2rem;
+                    text-align: center;
+                    font-size: 1.2rem;
+                }
+
+                .error {
+                    color: #ff4444;
                 }
             `}</style>
         </div>

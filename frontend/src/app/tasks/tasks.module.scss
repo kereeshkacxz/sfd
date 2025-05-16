@@ -6,3 +6,44 @@
     border-radius: 8px; // можно чуть скруглить кнопки, если хочешь
     font-size: 16px;
 }
+
+.modalContent {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 500px;
+    max-width: 100%;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input, .textarea {
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+}
+
+.textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.modalActions {
+    margin-top: 20px;
+}
+
+.addButton {
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
