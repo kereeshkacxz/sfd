@@ -18,7 +18,7 @@ class Task(Base):
     description = Column(Text)
     status = Column(Enum(TaskStatus), nullable=False)
     deadline = Column(DateTime)
-    assigned_to = Column(Integer, ForeignKey("users.id"))
+    assigned_to = Column(Integer, ForeignKey('users.id', ondelete='CASCADE'))  # Исправлено здесь
     created_by = Column(Integer, ForeignKey("users.id"))
     created_at = Column(DateTime, server_default=func.current_timestamp())
     updated_at = Column(DateTime, server_default=func.current_timestamp())

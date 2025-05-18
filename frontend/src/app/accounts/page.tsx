@@ -23,6 +23,8 @@ export default function AccountsPage() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isFormVisible, setFormVisible] = useState(false);
+    const [isAdminFormVisible, setAdminFormVisible] = useState(false);
+    const [currentUserRole, setCurrentUserRole] = useState<string>('');
 
     const formFields: Field[] = [
         {name: 'login', label: 'Логин', type: 'text', required: true},
@@ -35,6 +37,23 @@ export default function AccountsPage() {
             return localStorage.getItem('token');
         }
         return null;
+    };
+
+    const fetchCurrentUser = async () => {
+        try {
+            const token = getToken();
+            if (!token) {
+                router.push('/login');
+                return;
+            }
+            const data = await apiRequest('auth/me', 'get', undefined, token);
+            setCurrentUserRole(data.role);
+        } catch (err: any) {
+            console.error('Error fetching current user:', err);
+            if (err.status === 401) {
+                router.push('/login');
+            }
+        }
     };
 
     const fetchAccounts = async () => {
@@ -59,6 +78,7 @@ export default function AccountsPage() {
     };
 
     useEffect(() => {
+        fetchCurrentUser();
         fetchAccounts();
     }, []);
 
@@ -66,13 +86,17 @@ export default function AccountsPage() {
         setFormVisible(true);
     };
 
+    const handleAddAdmin = () => {
+        setAdminFormVisible(true);
+    };
+
     const handleCloseModal = () => {
         setFormVisible(false);
+        setAdminFormVisible(false);
     };
 
     const handleCreateWorker = async (formData: any) => {
         try {
-            console.log('Отправляемые данные:', formData);
             const token = getToken();
             if (!token) {
                 router.push('/login');
@@ -83,6 +107,21 @@ export default function AccountsPage() {
             setFormVisible(false);
         } catch (err: any) {
             alert(err.message || 'Ошибка при создании аккаунта');
+        }
+    };
+
+    const handleCreateAdmin = async (formData: any) => {
+        try {
+            const token = getToken();
+            if (!token) {
+                router.push('/login');
+                return;
+            }
+            await apiRequest('admins/', 'post', formData, token);
+            await fetchAccounts();
+            setAdminFormVisible(false);
+        } catch (err: any) {
+            alert(err.message || 'Ошибка при создании администратора');
         }
     };
 
@@ -110,10 +149,15 @@ export default function AccountsPage() {
                 withCheckbox={false}
                 baseHref="/accounts"
             />
-            <div style={{width: '100%', maxWidth: '500px', margin: '20px auto 0'}}>
+            <div style={{width: '100%', maxWidth: '500px', margin: '20px auto 0', display: 'flex', flexDirection: 'column', gap: '10px'}}>
                 <Button view="action" size="l" onClick={handleAddWorker} style={{width: '100%'}}>
                     Добавить работника
                 </Button>
+                {currentUserRole === 'superadmin' && (
+                    <Button view="action" size="l" onClick={handleAddAdmin} style={{width: '100%'}}>
+                        Добавить администратора
+                    </Button>
+                )}
             </div>
 
             <Modal open={isFormVisible} onClose={handleCloseModal}>
@@ -125,6 +169,21 @@ export default function AccountsPage() {
                         initialData={{}} 
                         fields={formFields} 
                         onSubmit={handleCreateWorker}
+                        submitText="Создать"
+                        showDelete={false}
+                    />
+                </div>
+            </Modal>
+
+            <Modal open={isAdminFormVisible} onClose={handleCloseModal}>
+                <div style={{padding: '20px', maxWidth: '600px'}}>
+                    <Flex justifyContent="center" style={{marginBottom: '20px'}}>
+                        <Text variant="header-1">Создание администратора</Text>
+                    </Flex>
+                    <DynamicForm 
+                        initialData={{}} 
+                        fields={formFields} 
+                        onSubmit={handleCreateAdmin}
                         submitText="Создать"
                         showDelete={false}
                     />

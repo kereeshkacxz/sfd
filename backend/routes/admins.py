@@ -4,7 +4,14 @@ from backend.database import get_db
 from backend.models.user import User
 from backend.mocks.data import Role
 from backend.utils.auth import get_current_user
+from pydantic import BaseModel
+from datetime import datetime
 
+
+class AdminCreateRequest(BaseModel):
+    login: str
+    password: str
+    email: str
 router = APIRouter(prefix="/api/admins", tags=["Admins"])
 
 
@@ -20,20 +27,20 @@ def get_admins(db: Session = Depends(get_db), current_user: dict = Depends(get_c
 
 
 @router.post("/")
-def create_admin(login: str, password: str, email: str, db: Session = Depends(get_db),
+def create_admin(payload: AdminCreateRequest, db: Session = Depends(get_db),
                  current_user: dict = Depends(get_current_user)):
     if current_user["role"].value != Role.superadmin.value:
         raise HTTPException(status_code=403, detail="Only superadmin can create admins")
 
-    if db.query(User).filter(User.login == login).first():
+    if db.query(User).filter(User.login == payload.login).first():
         raise HTTPException(status_code=400, detail="Login already exists")
-    if db.query(User).filter(User.email == email).first():
+    if db.query(User).filter(User.email == payload.email).first():
         raise HTTPException(status_code=400, detail="Email already exists")
 
     db_user = User(
-        login=login,
-        password_hash=password,
-        email=email,
+        login=payload.login,
+        password_hash=payload.password,  # Ideally, hash it!
+        email=payload.email,
         role=Role.admin,
         created_at=datetime.utcnow(),
         updated_at=datetime.utcnow()
