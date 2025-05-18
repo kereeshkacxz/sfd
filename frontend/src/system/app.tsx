@@ -32,7 +32,8 @@ export const App: React.FC<AppProps> = ({children}) => {
         // curPage
         setCurPage(window.location.href.split('/')[3]);
         // авторизация
-        setIsAuthorized(Boolean(localStorage.getItem('token')));
+        localStorage.removeItem("token");
+        localStorage.removeItem("role");
         setIsLoading(false);
         const lsTheme = localStorage.getItem('theme') as Theme | null;
         setTheme(lsTheme ?? DEFAULT_THEME);

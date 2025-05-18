@@ -5,6 +5,7 @@ import { Plus } from '@gravity-ui/icons';
 import List from '@/components/List/List';
 import styles from './tasks.module.scss';
 import { apiRequest } from '@/utils';
+import { isSuperAdminFunc } from '@/components';
 
 export default function TasksPage() {
   const { add } = useToaster();
@@ -210,7 +211,7 @@ export default function TasksPage() {
         withCheckbox={true}
       />
 
-    <Button
+    {isSuperAdminFunc() && <Button
         view="action"
         size="xl"
         className={styles.fab}
@@ -219,7 +220,7 @@ export default function TasksPage() {
         >
         <span className={styles.fabText}>Создать задачу</span>
         <Icon data={Plus} size={24} />
-    </Button>
+    </Button>}
 
     <Modal
         open={isModalOpen}
