@@ -12,6 +12,7 @@ import {useRouter} from 'next/navigation';
 import {toaster} from '@gravity-ui/uikit/toaster-singleton';
 import Authentication from '@/app/authentication/page';
 import {ArrowRightFromSquare} from '@gravity-ui/icons';
+import { apiRequest } from '@/utils';
 
 interface AppProps {
     children: React.ReactNode;
@@ -32,8 +33,6 @@ export const App: React.FC<AppProps> = ({children}) => {
         // curPage
         setCurPage(window.location.href.split('/')[3]);
         // авторизация
-        localStorage.removeItem("token");
-        localStorage.removeItem("role");
         setIsLoading(false);
         const lsTheme = localStorage.getItem('theme') as Theme | null;
         setTheme(lsTheme ?? DEFAULT_THEME);
@@ -51,6 +50,22 @@ export const App: React.FC<AppProps> = ({children}) => {
 
     useEffect(() => {
         reloadAuthHandler = reload;
+        async function checkToken() {
+            try {
+                const dataAdmin = await apiRequest(
+                'auth/me',
+                'get',
+                {},
+                localStorage.getItem('token') ?? undefined,
+            );
+            localStorage.setItem('role', dataAdmin.role);
+            } catch(error){
+                localStorage.removeItem('token')
+                localStorage.removeItem('role')
+            }
+            reload()
+        }
+        checkToken();
         // не вызываем reload здесь — иначе Loader мгновенно исчезнет
     }, []);
 
